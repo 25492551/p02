@@ -1,0 +1,92 @@
+# Project Rules: Riemann Zeta Function Visualization and Simulation Project
+
+## Final Goal
+- **Visualize and simulate non-trivial zeros of the Riemann Zeta function**: Explore the mathematical properties and physical interpretations of the zeros through visualization and simulation.
+- Understand the distribution patterns, energy landscapes, and repulsion forces between zeros.
+- Develop predictive models for zero locations using both statistical and physical approaches.
+
+## Language Requirement
+- **All content in `.cursorrules` must be written in English.**
+- This file serves as a reference for Cursor AI and should be in English for better compatibility.
+
+## Data Sources
+- All source data is located in the `data/` directory.
+- Use the `@data` folder when referencing data files.
+- Riemann Zeta function zero data and related mathematical data should be stored in `data/`.
+
+## Logging Rules
+
+### Job Log - Mandatory and Active
+- **Mandatory**: All jobs must be logged in the `log/job log/` directory.
+- **Active**: Cursor must actively reference and update job logs.
+- Job logs record project progress and executed tasks.
+- Before starting a job, check existing logs. After completing a job, you must write a log entry.
+- Job logging is mandatory, not optional.
+
+### Job Log Map - Mandatory Update
+- **Mandatory**: After creating a new job log file, you **must** update `log/job log/logmap_job.md`.
+- The logmap file contains summaries of all job log files in chronological order.
+- When adding a new entry to logmap_job.md:
+  1. Add a new section with the job log filename as header (e.g., `### job_YYYY-MM-DD_HHMMSS.md`)
+  2. Include: Job Date/Time, Job Overview (brief summary), Changed Files, and key details
+  3. Update the "업데이트 기록" (Update Record) section at the bottom with the date
+- Format: Follow the existing format in logmap_job.md for consistency.
+- This ensures all job logs are easily discoverable and summarized in one place.
+
+### Chat Log
+- All chat conversations are logged in the `log/chat log/` directory by user.
+- Cursor passively references chat logs.
+- Chat logs are only referenced when explicitly instructed by the user.
+
+## Virtual Environment Usage Rules
+- The project has a `venv/` virtual environment configured.
+- When installing Python packages, you must activate and use the virtual environment.
+- Package installation command examples:
+  ```bash
+  source venv/bin/activate
+  pip install [package_name]
+  ```
+- Or install by directly specifying the virtual environment:
+  ```bash
+  venv/bin/pip install [package_name]
+  ```
+
+## Script Folder Rules
+- All Python scripts for visualization, simulation, and calculations are located in the `script/` directory.
+- Scripts in the `script/` folder should be used for:
+  - Riemann Zeta function calculations and approximations
+  - Visualization of zeros, energy landscapes, and vector fields
+  - Particle simulations and Coulomb gas models
+  - Zero prediction models
+  - Sound synthesis from zero frequencies
+- When creating scripts, use the virtual environment (`venv/`) for package management.
+- Scripts should be well-documented with comments explaining their purpose and mathematical formulas.
+- Scripts should generate visualizations (plots, graphs) and save them appropriately.
+
+## Report Folder Rules
+- **Mandatory**: All analysis results and reports must be written in the `report/` directory.
+- **Active**: Cursor must actively create and update reports when performing data analysis or visualization.
+- Report files should be well-structured markdown documents containing:
+  - Analysis objectives and methodology
+  - Data sources and processing steps
+  - Analysis results with tables, statistics, and visualizations (if applicable)
+  - Conclusions and observations
+  - Date and time of report generation
+- Report naming convention: Use descriptive names like `[analysis_topic]_analysis.md` or `[visualization_topic]_report.md`.
+- When performing data analysis tasks or visualization work, you **must** create a report in the `report/` folder documenting the analysis results.
+- Reporting is mandatory, not optional.
+
+## Visualization and Output Rules
+- Generated visualizations (plots, graphs, images) should be saved in appropriate locations (e.g., project root or `data/` directory).
+- Sound files generated from zero frequencies should be saved with descriptive names.
+- All output files should be referenced in reports when relevant.
+
+## Workflow
+1. Use files from the `@data` folder for data analysis tasks (optional).
+2. Check existing logs in `log/job log/` before starting a job.
+3. **Must** record job content in `log/job log/` after completing a job (mandatory).
+4. Chat logs are only checked when requested by the user.
+5. Use scripts from the `script/` folder for calculations, visualizations, and simulations.
+6. **Must** create analysis reports in the `report/` folder after completing data analysis or visualization work (mandatory).
+7. Save generated visualizations and output files appropriately and document them in reports.
+
