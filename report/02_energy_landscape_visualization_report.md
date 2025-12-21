@@ -1,187 +1,186 @@
-# 에너지 지형 시각화 분석 리포트
+# Energy Landscape Visualization Analysis Report
 
-**생성 일시**: 2025-12-21  
-**스크립트**: `script/2.py`  
-**작성 목적**: 복소평면 상의 에너지 지형을 통한 영점 안정성 분석
-
----
-
-## 1. 개요
-
-이 리포트는 `script/2.py` 스크립트를 분석합니다. 이 스크립트는 리만 제타 함수의 영점 주변 에너지 지형을 계산하고 시각화하여 영점의 안정성을 분석합니다.
-
-### 1.1 목적
-
-- 복소평면 상의 에너지 지형 계산
-- 질서 에너지와 혼돈 에너지의 합성
-- 영점의 안정성 및 "폭풍의 눈(Eye of the Storm)" 탐구
+**Created**: 2025-12-21  
+**Script**: `script/2.py`  
+**Purpose**: Analysis of zero stability through energy landscape on the complex plane
 
 ---
 
-## 2. 스크립트 분석
+## 1. Overview
 
-### 2.1 주요 함수: `energy_landscape()`
+This report analyzes the `script/2.py` script. This script calculates and visualizes the energy landscape around zeros of the Riemann zeta function to analyze zero stability.
+
+### 1.1 Objectives
+
+- Calculate energy landscape on the complex plane
+- Synthesis of order energy and chaos energy
+- Exploration of zero stability and the "Eye of the Storm"
+
+---
+
+## 2. Script Analysis
+
+### 2.1 Main Function: `energy_landscape()`
 
 ```python
 def energy_landscape(x_range, y_range, noise_sensitivity=2.0):
 ```
 
-**파라미터**:
-- `x_range`: 실수부 (Re(s)) 범위
-- `y_range`: 허수부 (Im(s)) 범위
-- `noise_sensitivity`: 임계선에서 멀어질수록 커지는 페널티 강도
+**Parameters**:
+- `x_range`: Real part (Re(s)) range
+- `y_range`: Imaginary part (Im(s)) range
+- `noise_sensitivity`: Intensity of penalty that increases with distance from the critical line
 
-**에너지 구성**:
+**Energy Composition**:
 
-1. **질서 에너지 (Order Energy)**:
+1. **Order Energy**:
    ```python
    order_energy = np.log(np.abs(zeta(Z)) + 1e-9)
    ```
-   - 제타 함수의 크기의 로그값
-   - 영점 근처에서 낮은 값 (안정)
-   - 로그를 취해 영점 근처의 변화 강조
+   - Logarithm of the magnitude of the zeta function
+   - Low values near zeros (stable)
+   - Logarithm emphasizes changes near zeros
 
-2. **혼돈 에너지 (Chaos Energy)**:
+2. **Chaos Energy**:
    ```python
    distance_from_critical = np.abs(X - 0.5)
    chaos_energy = noise_sensitivity * (distance_from_critical ** 2)
    ```
-   - 임계선(Re(s) = 0.5)에서의 거리에 비례
-   - 거리의 제곱에 비례하여 급격히 증가
-   - 리만 가설 위반에 대한 페널티
+   - Proportional to distance from the critical line (Re(s) = 0.5)
+   - Increases rapidly proportional to the square of distance
+   - Penalty for violating the Riemann hypothesis
 
-3. **총 에너지**:
+3. **Total Energy**:
    ```python
    total_energy = order_energy + chaos_energy
    ```
 
-### 2.2 시뮬레이션 설정
+### 2.2 Simulation Settings
 
-- **실수부 범위**: 0 ~ 1 (400개 포인트)
-- **허수부 범위**: 10 ~ 30 (800개 포인트)
-  - 첫 번째 영점(14.13)부터 세 번째 영점(25.01) 포함
-- **노이즈 민감도**: 10.0 (높은 페널티)
+- **Real part range**: 0 ~ 1 (400 points)
+- **Imaginary part range**: 10 ~ 30 (800 points)
+  - Includes first zero (14.13) through third zero (25.01)
+- **Noise sensitivity**: 10.0 (high penalty)
 
-### 2.3 시각화
+### 2.3 Visualization
 
-- **히트맵**: `contourf()` 사용, 50개 레벨
-- **컬러맵**: `RdYlBu_r` (빨강-노랑-파랑 역순)
-  - 파란색/검은색: 낮은 에너지 (안정)
-  - 노란색/붉은색: 높은 에너지 (불안정)
-- **임계선 표시**: Re(s) = 0.5 수직선
-- **영점 위치**: 첫 3개 영점 표시 (별 모양)
+- **Heatmap**: Using `contourf()`, 50 levels
+- **Colormap**: `RdYlBu_r` (red-yellow-blue reversed)
+  - Blue/Black: Low energy (stable)
+  - Yellow/Red: High energy (unstable)
+- **Critical line marked**: Vertical line at Re(s) = 0.5
+- **Zero locations**: First 3 zeros marked (star shape)
 
 ---
 
-## 3. 수학적 배경
+## 3. Mathematical Background
 
-### 3.1 에너지 함수의 의미
+### 3.1 Meaning of Energy Function
 
-에너지 함수 H(s)는 다음과 같이 정의됩니다:
+The energy function H(s) is defined as:
 
 ```
 H(s) = log(|ζ(s)|) + α × |Re(s) - 0.5|²
 ```
 
-여기서:
-- 첫 번째 항: 제타 함수의 크기 (질서)
-- 두 번째 항: 임계선에서의 거리 (혼돈 페널티)
-- α: 노이즈 민감도 계수
+where:
+- First term: Magnitude of zeta function (order)
+- Second term: Distance from critical line (chaos penalty)
+- α: Noise sensitivity coefficient
 
-### 3.2 영점의 안정성
+### 3.2 Zero Stability
 
-- **영점 근처**: |ζ(s)| ≈ 0 → log(|ζ(s)|) → -∞
-- **임계선 위**: |Re(s) - 0.5| = 0 → 혼돈 에너지 = 0
-- **결과**: 영점에서 총 에너지가 최소값
+- **Near zeros**: |ζ(s)| ≈ 0 → log(|ζ(s)|) → -∞
+- **On critical line**: |Re(s) - 0.5| = 0 → chaos energy = 0
+- **Result**: Total energy is minimum at zeros
 
-### 3.3 "폭풍의 눈" 비유
+### 3.3 "Eye of the Storm" Analogy
 
-- **폭풍의 중심**: 영점 (에너지 최소)
-- **폭풍의 벽**: 임계선에서 멀어질수록 에너지 증가
-- **안정성**: 영점이 에너지 우물(energy well)의 바닥
+- **Center of storm**: Zero (energy minimum)
+- **Wall of storm**: Energy increases as distance from critical line increases
+- **Stability**: Zeros are at the bottom of energy wells
 
 ---
 
-## 4. 예상 결과 분석
+## 4. Expected Results Analysis
 
-### 4.1 에너지 지형의 특징
+### 4.1 Characteristics of Energy Landscape
 
-1. **영점 위치**:
+1. **Zero locations**:
    - t ≈ 14.134, 21.022, 25.011
-   - 각 영점에서 에너지 최소값
-   - 파란색/검은색 영역
+   - Energy minimum at each zero
+   - Blue/black regions
 
-2. **임계선**:
-   - Re(s) = 0.5에서 에너지가 낮음
-   - 리만 가설과 일치
+2. **Critical line**:
+   - Low energy at Re(s) = 0.5
+   - Consistent with Riemann hypothesis
 
-3. **에너지 경사**:
-   - 임계선에서 멀어질수록 급격히 증가
-   - 제곱 법칙에 따른 빠른 증가
+3. **Energy gradient**:
+   - Rapidly increases away from critical line
+   - Fast increase following square law
 
-### 4.2 안정성 분석
+### 4.2 Stability Analysis
 
-- **영점의 안정성**: 에너지 우물의 깊이로 측정
-- **첫 번째 영점**: 가장 깊은 우물 (가장 안정)
-- **높은 영점**: 상대적으로 얕은 우물
-
----
-
-## 5. 기술적 세부사항
-
-### 5.1 수치 계산
-
-- **scipy.special.zeta**: 정확한 제타 함수 계산
-- **메시그리드**: 400 × 800 = 320,000개 점 계산
-- **로그 변환**: 영점 근처의 변화 강조
-
-### 5.2 시각화 기법
-
-- **등고선**: `contourf()` 사용
-- **컬러맵**: 직관적인 에너지 표현
-- **마커**: 영점 위치 명확히 표시
-
-### 5.3 개선 가능한 부분
-
-1. **3D 시각화**: 표면 플롯 추가
-2. **애니메이션**: 노이즈 민감도 변화에 따른 동적 시각화
-3. **더 넓은 범위**: 더 많은 영점 포함
+- **Zero stability**: Measured by depth of energy wells
+- **First zero**: Deepest well (most stable)
+- **Higher zeros**: Relatively shallow wells
 
 ---
 
-## 6. 결론 및 관찰
+## 5. Technical Details
 
-### 6.1 주요 발견
+### 5.1 Numerical Calculation
 
-1. **에너지 우물**: 각 영점이 명확한 에너지 최소점
-2. **임계선의 중요성**: Re(s) = 0.5에서 에너지가 낮음
-3. **안정성**: 영점들이 에너지적으로 안정적
+- **scipy.special.zeta**: Accurate zeta function calculation
+- **Meshgrid**: Calculation at 400 × 800 = 320,000 points
+- **Log transformation**: Emphasizes changes near zeros
 
-### 6.2 수학적 의미
+### 5.2 Visualization Techniques
 
-- 리만 가설의 물리적 해석 가능
-- 영점의 위치가 에너지 최소화 원리로 설명 가능
-- "폭풍의 눈" 비유가 수학적으로 타당함
+- **Contour lines**: Using `contourf()`
+- **Colormap**: Intuitive energy representation
+- **Markers**: Clearly mark zero locations
 
-### 6.3 향후 연구 방향
+### 5.3 Areas for Improvement
 
-1. **동적 분석**: 에너지 지형의 시간 변화
-2. **고차원 확장**: 더 많은 영점 포함
-3. **최적화**: 에너지 최소화 알고리즘으로 영점 찾기
+1. **3D visualization**: Add surface plots
+2. **Animation**: Dynamic visualization according to noise sensitivity changes
+3. **Wider range**: Include more zeros
 
 ---
 
-## 7. 참고 문헌
+## 6. Conclusions and Observations
+
+### 6.1 Main Findings
+
+1. **Energy wells**: Each zero is a clear energy minimum point
+2. **Importance of critical line**: Low energy at Re(s) = 0.5
+3. **Stability**: Zeros are energetically stable
+
+### 6.2 Mathematical Meaning
+
+- Physical interpretation of the Riemann hypothesis is possible
+- Zero locations can be explained by energy minimization principle
+- "Eye of the storm" analogy is mathematically valid
+
+### 6.3 Future Research Directions
+
+1. **Dynamic analysis**: Time evolution of energy landscape
+2. **Higher-dimensional extension**: Include more zeros
+3. **Optimization**: Find zeros using energy minimization algorithms
+
+---
+
+## 7. References
 
 1. **Riemann, B. (1859)**: "Über die Anzahl der Primzahlen unter einer gegebenen Größe"
 2. **Edwards, H. M. (2001)**: "Riemann's Zeta Function"
-3. **Energy Landscape Theory**: 통계역학 및 최적화 이론
+3. **Energy Landscape Theory**: Statistical mechanics and optimization theory
 
 ---
 
-**작성자**: Cursor AI  
-**작성 일시**: 2025-12-21  
-**관련 파일**:
-- `script/2.py`: 에너지 지형 시각화 스크립트
-- `plan/plan01.md`: 프로젝트 계획 문서
-
+**Author**: Cursor AI  
+**Created**: 2025-12-21  
+**Related Files**:
+- `script/2.py`: Energy landscape visualization script
+- `plan/plan01.md`: Project planning document

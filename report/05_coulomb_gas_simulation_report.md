@@ -1,49 +1,49 @@
-# 쿨롱 가스 시뮬레이션 분석 리포트
+# Coulomb Gas Simulation Analysis Report
 
-**생성 일시**: 2025-12-21  
-**스크립트**: `script/5.py`  
-**작성 목적**: 영점들 간의 척력을 통한 중근 불가능성 증명
-
----
-
-## 1. 개요
-
-이 리포트는 `script/5.py` 스크립트를 분석합니다. 이 스크립트는 리만 제타 함수의 영점들을 쿨롱 가스의 입자로 모델링하여, 영점들 간의 척력(repulsion)이 중근(multiple roots)을 불가능하게 만드는 것을 시뮬레이션합니다.
-
-### 1.1 목적
-
-- 쿨롱 척력 시뮬레이션
-- 영점들 간의 반발력 분석
-- 중근 불가능성의 물리적 증명
+**Created**: 2025-12-21  
+**Script**: `script/5.py`  
+**Purpose**: Proof of impossibility of multiple roots through repulsion between zeros
 
 ---
 
-## 2. 스크립트 분석
+## 1. Overview
 
-### 2.1 주요 함수: `simulate_coulomb_gas()`
+This report analyzes the `script/5.py` script. This script models zeros of the Riemann zeta function as particles in a Coulomb gas to simulate how repulsion between zeros makes multiple roots impossible.
+
+### 1.1 Objectives
+
+- Simulate Coulomb repulsion
+- Analyze repulsive forces between zeros
+- Physical proof of impossibility of multiple roots
+
+---
+
+## 2. Script Analysis
+
+### 2.1 Main Function: `simulate_coulomb_gas()`
 
 ```python
 def simulate_coulomb_gas(num_particles=20, num_steps=200, learning_rate=0.01):
 ```
 
-**파라미터**:
-- `num_particles`: 입자 수 (기본값 20)
-- `num_steps`: 시뮬레이션 스텝 수 (기본값 200)
-- `learning_rate`: 학습률 (기본값 0.01)
+**Parameters**:
+- `num_particles`: Number of particles (default 20)
+- `num_steps`: Number of simulation steps (default 200)
+- `learning_rate`: Learning rate (default 0.01)
 
-### 2.2 초기 조건
+### 2.2 Initial Conditions
 
 ```python
 positions = np.sort(np.random.uniform(10, 20, num_particles))
 ```
 
-- **위치**: 임계선 위 (1차원)
-- **범위**: 10 ~ 20 (첫 번째 영점 근처)
-- **초기 상태**: 서로 매우 가깝게 배치 (중근 상황 시뮬레이션)
+- **Positions**: On critical line (one-dimensional)
+- **Range**: 10 ~ 20 (near first zero)
+- **Initial state**: Placed very close to each other (simulating multiple root situation)
 
-### 2.3 힘 계산
+### 2.3 Force Calculation
 
-#### 2.3.1 쿨롱 척력
+#### 2.3.1 Coulomb Repulsion
 
 ```python
 for i in range(num_particles):
@@ -53,169 +53,168 @@ for i in range(num_particles):
         forces[i] += 1.0 / dist
 ```
 
-**특징**:
-- 모든 입자 쌍에 대해 계산
-- 거리의 역수에 비례 (F = 1/r)
-- 거리가 0에 가까우면 힘이 무한대로 증가
+**Features**:
+- Calculated for all particle pairs
+- Proportional to inverse of distance (F = 1/r)
+- Force increases to infinity as distance approaches 0
 
-#### 2.3.2 외부 압력 (Confinement Potential)
+#### 2.3.2 External Pressure (Confinement Potential)
 
 ```python
 forces -= 0.5 * (positions - 15)
 ```
 
-**의미**:
-- 입자들이 무한히 멀어지지 않게 가두는 힘
-- 중앙(15)으로 약하게 당김
-- 소수의 밀도 함수 역할
+**Meaning**:
+- Force that prevents particles from moving infinitely far apart
+- Weak attraction toward center (15)
+- Acts as prime density function
 
-### 2.4 위치 업데이트
+### 2.4 Position Update
 
 ```python
 positions += learning_rate * forces
 positions = np.sort(positions)
 ```
 
-**알고리즘**:
-1. 힘에 비례하여 이동
-2. 순서 유지 (정렬)
-3. 1차원 위상 유지
+**Algorithm**:
+1. Move proportional to force
+2. Maintain order (sorting)
+3. Maintain one-dimensional phase
 
-### 2.5 시각화
+### 2.5 Visualization
 
-1. **시간에 따른 위치 변화**:
-   - 각 입자의 궤적 표시
-   - 초기 상태: 붉은색 영역 (충돌 직전)
-   - 최종 상태: 초록색 영역 (안정 격자)
+1. **Position changes over time**:
+   - Display trajectories of each particle
+   - Initial state: Red region (just before collision)
+   - Final state: Green region (stable lattice)
 
-2. **간격 분포 (Pair Correlation)**:
-   - 최종 위치 간 간격 히스토그램
-   - 거리 0 표시 (중근 불가능)
+2. **Gap distribution (Pair Correlation)**:
+   - Histogram of gaps between final positions
+   - Mark distance 0 (multiple roots impossible)
 
 ---
 
-## 3. 수학적 배경
+## 3. Mathematical Background
 
-### 3.1 쿨롱 가스 모델
+### 3.1 Coulomb Gas Model
 
-리만 제타 함수의 영점들을 쿨롱 가스의 입자로 모델링:
+Modeling zeros of the Riemann zeta function as particles in a Coulomb gas:
 
-- **척력**: F = 1/r (1차원)
-- **에너지**: U = Σ log|r_i - r_j|
-- **평형**: 에너지 최소화
+- **Repulsion**: F = 1/r (one-dimensional)
+- **Energy**: U = Σ log|r_i - r_j|
+- **Equilibrium**: Energy minimization
 
-### 3.2 중근 불가능성
+### 3.2 Impossibility of Multiple Roots
 
-**수학적 정리**: 리만 제타 함수는 중근을 가지지 않는다.
+**Mathematical theorem**: The Riemann zeta function has no multiple roots.
 
-**물리적 해석**:
-- 두 영점이 같은 위치에 있으면 거리 = 0
-- 척력이 무한대로 증가
-- 따라서 중근은 불가능
+**Physical interpretation**:
+- If two zeros are at the same location, distance = 0
+- Repulsion increases to infinity
+- Therefore, multiple roots are impossible
 
 ### 3.3 GUE (Gaussian Unitary Ensemble)
 
-- **Level Repulsion**: 에너지 레벨 간 반발
-- **간격 분포**: Wigner-Dyson 분포
-- **통계적 모델**: 랜덤 행렬 이론
+- **Level Repulsion**: Repulsion between energy levels
+- **Gap distribution**: Wigner-Dyson distribution
+- **Statistical model**: Random matrix theory
 
 ---
 
-## 4. 예상 결과 분석
+## 4. Expected Results Analysis
 
-### 4.1 진화 과정
+### 4.1 Evolution Process
 
-1. **초기 상태 (Step 0-20)**:
-   - 입자들이 매우 가깝게 배치
-   - 강한 척력 작용
-   - 빠른 분리
+1. **Initial state (Step 0-20)**:
+   - Particles placed very close together
+   - Strong repulsion acts
+   - Rapid separation
 
-2. **중간 상태 (Step 20-100)**:
-   - 점진적인 분리
-   - 간격이 균등해짐
-   - 안정화 과정
+2. **Intermediate state (Step 20-100)**:
+   - Gradual separation
+   - Gaps become uniform
+   - Stabilization process
 
-3. **최종 상태 (Step 100-200)**:
-   - 안정적인 격자 구조
-   - 균등한 간격
-   - 중근 없음
+3. **Final state (Step 100-200)**:
+   - Stable lattice structure
+   - Uniform gaps
+   - No multiple roots
 
-### 4.2 간격 분포
+### 4.2 Gap Distribution
 
-- **평균 간격**: 약 0.5 ~ 1.0
-- **최소 간격**: 0보다 큼 (중근 없음)
-- **분포**: 상대적으로 균등
+- **Average gap**: Approximately 0.5 ~ 1.0
+- **Minimum gap**: Greater than 0 (no multiple roots)
+- **Distribution**: Relatively uniform
 
-### 4.3 안정성
+### 4.3 Stability
 
-- **격자 구조**: 안정적인 배열
-- **간격 유지**: 입자들이 서로 밀어냄
-- **중근 방지**: 거리 0 불가능
-
----
-
-## 5. 기술적 세부사항
-
-### 5.1 계산 복잡도
-
-- **힘 계산**: O(n²) (모든 쌍)
-- **입자 수**: 15개 (효율적)
-- **스텝 수**: 200 (충분한 수렴)
-
-### 5.2 수치 안정성
-
-- **정렬**: 순서 유지
-- **경계 조건**: 없음 (자유 이동)
-- **수렴**: 안정적인 최종 상태
-
-### 5.3 시각화
-
-- **궤적**: 모든 입자 표시
-- **히스토그램**: 간격 분포
-- **레이블**: 설명 텍스트
+- **Lattice structure**: Stable arrangement
+- **Gap maintenance**: Particles push each other apart
+- **Multiple root prevention**: Distance 0 impossible
 
 ---
 
-## 6. 결론 및 관찰
+## 5. Technical Details
 
-### 6.1 주요 발견
+### 5.1 Computational Complexity
 
-1. **자연스러운 분리**: 입자들이 자동으로 분리됨
-2. **안정적 격자**: 균등한 간격의 격자 구조
-3. **중근 불가능**: 거리 0이 발생하지 않음
+- **Force calculation**: O(n²) (all pairs)
+- **Number of particles**: 15 (efficient)
+- **Number of steps**: 200 (sufficient convergence)
 
-### 6.2 물리적 의미
+### 5.2 Numerical Stability
 
-- **쿨롱 가스**: 영점의 물리적 모델
-- **척력**: 영점 간 반발의 원인
-- **안정성**: 격자 구조의 안정성
+- **Sorting**: Maintain order
+- **Boundary conditions**: None (free movement)
+- **Convergence**: Stable final state
 
-### 6.3 수학적 의미
+### 5.3 Visualization
 
-- **중근 불가능성**: 시뮬레이션으로 확인
-- **간격 분포**: GUE 모델과 일치 가능
-- **물리적 증명**: 수학적 정리의 물리적 해석
-
-### 6.4 향후 연구 방향
-
-1. **더 많은 입자**: 통계적 신뢰성 향상
-2. **2D 확장**: 복소평면 전체에서의 시뮬레이션
-3. **정량적 분석**: 간격 분포의 정확한 측정
-4. **GUE 비교**: 이론적 분포와 비교
+- **Trajectories**: Display all particles
+- **Histogram**: Gap distribution
+- **Labels**: Explanatory text
 
 ---
 
-## 7. 참고 문헌
+## 6. Conclusions and Observations
+
+### 6.1 Main Findings
+
+1. **Natural separation**: Particles automatically separate
+2. **Stable lattice**: Lattice structure with uniform gaps
+3. **Multiple roots impossible**: Distance 0 does not occur
+
+### 6.2 Physical Meaning
+
+- **Coulomb gas**: Physical model of zeros
+- **Repulsion**: Cause of repulsion between zeros
+- **Stability**: Stability of lattice structure
+
+### 6.3 Mathematical Meaning
+
+- **Impossibility of multiple roots**: Confirmed by simulation
+- **Gap distribution**: Possibly consistent with GUE model
+- **Physical proof**: Physical interpretation of mathematical theorem
+
+### 6.4 Future Research Directions
+
+1. **More particles**: Improve statistical reliability
+2. **2D extension**: Simulation across entire complex plane
+3. **Quantitative analysis**: Accurate measurement of gap distribution
+4. **GUE comparison**: Compare with theoretical distribution
+
+---
+
+## 7. References
 
 1. **Riemann, B. (1859)**: "Über die Anzahl der Primzahlen unter einer gegebenen Größe"
-2. **Coulomb Gas Model**: 통계역학 모델
-3. **GUE Theory**: 랜덤 행렬 이론 및 Wigner-Dyson 분포
+2. **Coulomb Gas Model**: Statistical mechanics model
+3. **GUE Theory**: Random matrix theory and Wigner-Dyson distribution
 
 ---
 
-**작성자**: Cursor AI  
-**작성 일시**: 2025-12-21  
-**관련 파일**:
-- `script/5.py`: 쿨롱 가스 시뮬레이션 스크립트
-- `plan/plan01.md`: 프로젝트 계획 문서
-
+**Author**: Cursor AI  
+**Created**: 2025-12-21  
+**Related Files**:
+- `script/5.py`: Coulomb gas simulation script
+- `plan/plan01.md`: Project planning document

@@ -1,46 +1,46 @@
-# 스펙트럼 강성을 이용한 영점 예측 개선 리포트
+# Spectral Rigidity-Based Zero Prediction Improvement Report
 
-**생성 일시**: 2025-12-21  
-**스크립트**: `script/9.py`  
-**작성 목적**: 스펙트럼 강성(Spectral Rigidity)을 이용한 영점 예측 모델 개선 분석
-
----
-
-## 1. 개요
-
-이 리포트는 `script/9.py` 스크립트를 분석합니다. 이 스크립트는 이전 예측 모델의 오차를 줄이기 위해 스펙트럼 강성 이론을 적용한 개선된 예측 방법을 제시합니다.
-
-### 1.1 목적
-
-- 리만-폰 망골트 공식을 이용한 이론적 위치 계산 개선
-- 스펙트럼 강성(Spectral Rigidity)을 이용한 미시적 보정
-- 이전 예측(오차 +0.1322)에서의 개선 효과 분석
-
-### 1.2 배경
-
-이전 예측 모델(`script/7.py`)에서 30번째 영점을 예측했을 때 오차가 발생했습니다. 이 스크립트는 GUE 이론의 스펙트럼 강성 개념을 도입하여 예측 정확도를 향상시키려는 시도입니다.
+**Created**: 2025-12-21  
+**Script**: `script/9.py`  
+**Purpose**: Analysis of improved zero prediction model using Spectral Rigidity
 
 ---
 
-## 2. 스크립트 분석
+## 1. Overview
 
-### 2.1 데이터 준비
+This report analyzes the `script/9.py` script. This script presents an improved prediction method that applies spectral rigidity theory to reduce errors in the previous prediction model.
+
+### 1.1 Objectives
+
+- Improved calculation of theoretical locations using the Riemann-von Mangoldt formula
+- Microscopic correction using Spectral Rigidity
+- Analysis of improvement effects from previous prediction (error +0.1322)
+
+### 1.2 Background
+
+The previous prediction model (`script/7.py`) had errors when predicting the 30th zero. This script attempts to improve prediction accuracy by introducing the concept of spectral rigidity from GUE theory.
+
+---
+
+## 2. Script Analysis
+
+### 2.1 Data Preparation
 
 ```python
-true_zeros = np.array([14.1347, 21.0220, ..., 101.3178])  # 30개 영점
-train_zeros = true_zeros[:-1]  # 처음 29개 (훈련 데이터)
-target_zero = true_zeros[-1]   # 30번째 (타겟: 101.3178)
-last_zero_actual = train_zeros[-1]  # 29번째 실제값 (98.8312)
+true_zeros = np.array([14.1347, 21.0220, ..., 101.3178])  # 30 zeros
+train_zeros = true_zeros[:-1]  # First 29 (training data)
+target_zero = true_zeros[-1]   # 30th (target: 101.3178)
+last_zero_actual = train_zeros[-1]  # 29th actual value (98.8312)
 ```
 
-- **데이터 구조**: 30개의 실제 영점 값 사용
-- **훈련 데이터**: 처음 29개 영점
-- **타겟**: 30번째 영점 (101.3178)
-- **참조점**: 29번째 영점 (98.8312)
+- **Data structure**: Uses 30 actual zero values
+- **Training data**: First 29 zeros
+- **Target**: 30th zero (101.3178)
+- **Reference point**: 29th zero (98.8312)
 
-### 2.2 개선된 거시 모델: 리만-폰 망골트 역함수
+### 2.2 Improved Macroscopic Model: Riemann-von Mangoldt Inverse Function
 
-#### 2.2.1 이론적 위치 계산
+#### 2.2.1 Theoretical Location Calculation
 
 ```python
 def riemann_n_formula(t, n):
@@ -48,16 +48,16 @@ def riemann_n_formula(t, n):
     return val - n
 ```
 
-**의미**:
-- N(t) 공식의 역함수를 이용하여 n번째 영점의 "이상적인 위치" 계산
-- 로그 스퀴즈(log squeeze) 효과를 반영한 점근적 행동
+**Meaning**:
+- Calculate "ideal location" of nth zero using inverse function of N(t) formula
+- Asymptotic behavior reflecting log squeeze effect
 
-**공식**:
+**Formula**:
 ```
 N(t) = (t/2π) × log(t/2π) - (t/2π) + 7/8
 ```
 
-#### 2.2.2 29번째와 30번째 이론적 위치
+#### 2.2.2 Theoretical Locations of 29th and 30th Zeros
 
 ```python
 theory_29 = fsolve(riemann_n_formula, x0=90, args=(29))[0]
@@ -65,212 +65,211 @@ theory_30 = fsolve(riemann_n_formula, x0=100, args=(30))[0]
 global_gap = theory_30 - theory_29
 ```
 
-**계산 결과**:
-- **theory_29**: 29번째 영점의 이론적 위치
-- **theory_30**: 30번째 영점의 이론적 위치
-- **global_gap**: 이론적 간격 (로그 스퀴즈 반영)
+**Calculation results**:
+- **theory_29**: Theoretical location of 29th zero
+- **theory_30**: Theoretical location of 30th zero
+- **global_gap**: Theoretical gap (reflecting log squeeze)
 
-### 2.3 미시적 보정: 스펙트럼 강성 (Spectral Rigidity)
+### 2.3 Microscopic Correction: Spectral Rigidity
 
-#### 2.3.1 Displacement 계산
+#### 2.3.1 Displacement Calculation
 
 ```python
 displacement_29 = last_zero_actual - theory_29
 ```
 
-**의미**:
-- 29번째 영점이 이론적 위치에서 얼마나 벗어났는지 측정
-- **displacement > 0**: 이론보다 밀려남 (Pushed)
-- **displacement < 0**: 이론보다 당겨짐 (Pulled)
+**Meaning**:
+- Measure how much the 29th zero deviates from theoretical location
+- **displacement > 0**: Pushed beyond theory
+- **displacement < 0**: Pulled before theory
 
-#### 2.3.2 스펙트럼 강성 보정
+#### 2.3.2 Spectral Rigidity Correction
 
 ```python
-stiffness = 0.95  # 보정 계수 (Stiffness Factor)
+stiffness = 0.95  # Correction coefficient (Stiffness Factor)
 correction = displacement_29 * stiffness
 predicted_30 = theory_30 + correction
 ```
 
-**핵심 아이디어**:
-- GUE 이론에 따르면 영점들의 편차는 로그함수적으로 천천히 변함
-- 29번째가 밀려나 있었으면, 30번째도 밀려나 있을 확률이 높음
-- 하지만 척력 때문에 그 정도는 약간 줄어들거나 유지됨
-- **stiffness factor**: 1.0에 가까울수록 강한 강성 (완전 전이)
-- **0.95**: 약간의 감쇠를 반영 (척력 효과)
+**Core idea**:
+- According to GUE theory, deviations of zeros change logarithmically slowly
+- If the 29th was pushed out, the 30th is likely also pushed out
+- However, the degree is slightly reduced or maintained due to repulsion
+- **stiffness factor**: Closer to 1.0 means stronger rigidity (complete transfer)
+- **0.95**: Reflects slight attenuation (repulsion effect)
 
-**수학적 의미**:
-- 스펙트럼 강성은 에너지 레벨의 "강성"을 나타냄
-- 영점들의 편차가 서로 연관되어 있지만 완전히 동일하지 않음
-- 척력 효과로 인한 부분적 독립성 반영
+**Mathematical meaning**:
+- Spectral rigidity represents "rigidity" of energy levels
+- Deviations of zeros are related but not completely identical
+- Reflects partial independence due to repulsion effects
 
 ---
 
-## 3. 수학적 배경
+## 3. Mathematical Background
 
-### 3.1 스펙트럼 강성 (Spectral Rigidity)
+### 3.1 Spectral Rigidity
 
-**정의**:
-- 에너지 스펙트럼이 평균 행동에서 벗어나는 정도를 측정
-- 랜덤 행렬 이론에서 중요한 개념
-- GUE 모델에서 영점들의 편차가 서로 연관됨
+**Definition**:
+- Measures the degree to which energy spectrum deviates from average behavior
+- Important concept in random matrix theory
+- In GUE model, deviations of zeros are correlated
 
-**특징**:
-- **로그함수적 변화**: 편차가 천천히 변함
-- **상관성**: 인접한 영점들의 편차가 상관관계를 가짐
-- **척력 효과**: 영점 간 반발로 인한 부분적 독립성
+**Features**:
+- **Logarithmic change**: Deviations change slowly
+- **Correlation**: Deviations of adjacent zeros are correlated
+- **Repulsion effect**: Partial independence due to repulsion between zeros
 
-### 3.2 GUE 이론과 영점
+### 3.2 GUE Theory and Zeros
 
 **GUE (Gaussian Unitary Ensemble)**:
-- 랜덤 행렬 이론의 핵심 모델
-- 리만 제타 함수의 영점 분포와 깊은 연관성
-- **Level Repulsion**: 에너지 레벨 간 반발
-- **Spectral Rigidity**: 스펙트럼의 강성
+- Core model of random matrix theory
+- Deep connection with zero distribution of Riemann zeta function
+- **Level Repulsion**: Repulsion between energy levels
+- **Spectral Rigidity**: Rigidity of spectrum
 
-**영점에의 적용**:
-- 영점들의 편차는 로그함수적으로 천천히 변함
-- 인접한 영점들의 편차가 상관관계를 가짐
-- 척력 효과로 인해 완전한 전이는 아님
+**Application to zeros**:
+- Deviations of zeros change logarithmically slowly
+- Deviations of adjacent zeros are correlated
+- Complete transfer does not occur due to repulsion effects
 
-### 3.3 리만-폰 망골트 공식
+### 3.3 Riemann-von Mangoldt Formula
 
-**역사**:
-- 리만(1859): 영점 개수 함수 제안
-- 폰 망골트(1905): 정확한 공식 증명
+**History**:
+- Riemann (1859): Proposed zero counting function
+- von Mangoldt (1905): Proved exact formula
 
-**의미**:
-- 영점의 "평균적인" 분포
-- 대규모 통계적 특성
-- 점근적 행동 (로그 스퀴즈)
+**Meaning**:
+- "Average" distribution of zeros
+- Large-scale statistical properties
+- Asymptotic behavior (log squeeze)
 
 ---
 
-## 4. 예상 결과 분석
+## 4. Expected Results Analysis
 
-### 4.1 예측 과정
+### 4.1 Prediction Process
 
-1. **이론적 위치 계산**: 리만-폰 망골트 공식으로 29번째와 30번째 이론적 위치 계산
-2. **Displacement 측정**: 29번째 영점의 실제 위치와 이론적 위치의 차이 계산
-3. **스펙트럼 강성 보정**: displacement에 stiffness factor를 곱하여 보정값 계산
-4. **최종 예측**: 30번째 이론적 위치에 보정값을 더함
+1. **Theoretical location calculation**: Calculate theoretical locations of 29th and 30th zeros using Riemann-von Mangoldt formula
+2. **Displacement measurement**: Calculate difference between actual and theoretical locations of 29th zero
+3. **Spectral rigidity correction**: Calculate correction value by multiplying displacement by stiffness factor
+4. **Final prediction**: Add correction value to 30th theoretical location
 
-### 4.2 개선 효과
+### 4.2 Improvement Effects
 
-**이전 예측**:
-- 예측값: 101.4500
-- 오차: +0.1322
+**Previous prediction**:
+- Predicted value: 101.4500
+- Error: +0.1322
 
-**개선된 예측**:
-- 예측값: theory_30 + correction
-- 예상 오차: 이전보다 감소
+**Improved prediction**:
+- Predicted value: theory_30 + correction
+- Expected error: Reduced from previous
 
-**개선 요인**:
-- 스펙트럼 강성 개념 도입
-- GUE 이론의 편차 상관성 반영
-- 척력 효과를 고려한 stiffness factor
+**Improvement factors**:
+- Introduction of spectral rigidity concept
+- Reflection of deviation correlation from GUE theory
+- Stiffness factor considering repulsion effects
 
-### 4.3 Stiffness Factor의 영향
+### 4.3 Effect of Stiffness Factor
 
 **stiffness = 0.95**:
-- 29번째의 displacement가 95%만 30번째에 전이
-- 5%는 척력 효과로 인한 감쇠
-- 균형잡힌 보정
+- 95% of 29th displacement transfers to 30th
+- 5% attenuation due to repulsion effects
+- Balanced correction
 
-**다른 값의 효과**:
-- **stiffness = 1.0**: 완전 전이 (척력 무시)
-- **stiffness < 0.9**: 과도한 감쇠 (상관성 과소평가)
-- **0.9 < stiffness < 1.0**: 적절한 범위
+**Effects of other values**:
+- **stiffness = 1.0**: Complete transfer (ignoring repulsion)
+- **stiffness < 0.9**: Excessive attenuation (underestimating correlation)
+- **0.9 < stiffness < 1.0**: Appropriate range
 
 ---
 
-## 5. 기술적 세부사항
+## 5. Technical Details
 
-### 5.1 수치 최적화
+### 5.1 Numerical Optimization
 
-- **fsolve**: 비선형 방정식 해법
-- **초기값**: 90 (29번째), 100 (30번째)
-- **수렴**: 빠른 수렴 예상
+- **fsolve**: Nonlinear equation solver
+- **Initial values**: 90 (29th), 100 (30th)
+- **Convergence**: Fast convergence expected
 
-### 5.2 보정 알고리즘
+### 5.2 Correction Algorithm
 
 ```python
-# 1. 이론적 위치 계산
+# 1. Calculate theoretical locations
 theory_29 = fsolve(riemann_n_formula, x0=90, args=(29))[0]
 theory_30 = fsolve(riemann_n_formula, x0=100, args=(30))[0]
 
-# 2. Displacement 계산
+# 2. Calculate displacement
 displacement_29 = last_zero_actual - theory_29
 
-# 3. 스펙트럼 강성 보정
+# 3. Spectral rigidity correction
 stiffness = 0.95
 correction = displacement_29 * stiffness
 
-# 4. 최종 예측
+# 4. Final prediction
 predicted_30 = theory_30 + correction
 ```
 
-### 5.3 오차 분석
+### 5.3 Error Analysis
 
 ```python
 error_new = abs(target_zero - predicted_30)
 improvement = 0.1322 - error_new
 ```
 
-- **error_new**: 새로운 예측의 오차
-- **improvement**: 이전 대비 개선 정도
+- **error_new**: Error of new prediction
+- **improvement**: Degree of improvement from previous
 
 ---
 
-## 6. 결론 및 관찰
+## 6. Conclusions and Observations
 
-### 6.1 주요 발견
+### 6.1 Main Findings
 
-1. **스펙트럼 강성 개념**: GUE 이론의 스펙트럼 강성을 영점 예측에 적용
-2. **편차 상관성**: 인접한 영점들의 편차가 상관관계를 가짐
-3. **척력 효과**: 영점 간 반발로 인한 부분적 독립성
-4. **개선된 예측**: 이전 모델 대비 오차 감소 기대
+1. **Spectral rigidity concept**: Application of spectral rigidity from GUE theory to zero prediction
+2. **Deviation correlation**: Deviations of adjacent zeros are correlated
+3. **Repulsion effects**: Partial independence due to repulsion between zeros
+4. **Improved prediction**: Expected error reduction compared to previous model
 
-### 6.2 수학적 의미
+### 6.2 Mathematical Meaning
 
-- **거시적 모델**: 리만-폰 망골트 공식으로 이론적 위치 계산
-- **미시적 보정**: 스펙트럼 강성으로 편차 보정
-- **물리적 해석**: GUE 이론과 쿨롱 가스 모델의 통합
+- **Macroscopic model**: Calculate theoretical locations using Riemann-von Mangoldt formula
+- **Microscopic correction**: Correct deviations using spectral rigidity
+- **Physical interpretation**: Integration of GUE theory and Coulomb gas model
 
-### 6.3 실용적 의미
+### 6.3 Practical Meaning
 
-- **예측 정확도 향상**: 스펙트럼 강성을 고려한 더 정확한 예측
-- **이론적 근거**: GUE 이론에 기반한 과학적 접근
-- **파라미터 튜닝**: stiffness factor 최적화 가능
+- **Improved prediction accuracy**: More accurate prediction considering spectral rigidity
+- **Theoretical basis**: Scientific approach based on GUE theory
+- **Parameter tuning**: Possible optimization of stiffness factor
 
-### 6.4 한계 및 개선 방향
+### 6.4 Limitations and Improvement Directions
 
-**현재 한계**:
-- stiffness factor가 경험적 설정 (0.95)
-- 단일 영점의 displacement만 사용
-- 더 많은 이웃 영점 고려 가능
+**Current limitations**:
+- Stiffness factor is empirically set (0.95)
+- Only uses displacement of single zero
+- Could consider more neighboring zeros
 
-**개선 방향**:
-1. **파라미터 최적화**: stiffness factor를 데이터로부터 학습
-2. **다중 영점 보정**: 여러 이웃 영점의 displacement 고려
-3. **가중 평균**: 거리에 따른 가중치 적용
-4. **머신러닝**: 패턴 학습을 통한 자동 튜닝
+**Improvement directions**:
+1. **Parameter optimization**: Learn stiffness factor from data
+2. **Multi-zero correction**: Consider displacements of multiple neighboring zeros
+3. **Weighted average**: Apply weights according to distance
+4. **Machine learning**: Automatic tuning through pattern learning
 
 ---
 
-## 7. 참고 문헌
+## 7. References
 
 1. **Riemann, B. (1859)**: "Über die Anzahl der Primzahlen unter einer gegebenen Größe"
-2. **von Mangoldt, H. (1905)**: 리만-폰 망골트 공식
-3. **GUE Theory**: Gaussian Unitary Ensemble 및 랜덤 행렬 이론
-4. **Spectral Rigidity**: 에너지 스펙트럼의 강성 이론
-5. **Odlyzko, A. M.**: 영점 테이블
+2. **von Mangoldt, H. (1905)**: Riemann-von Mangoldt formula
+3. **GUE Theory**: Gaussian Unitary Ensemble and random matrix theory
+4. **Spectral Rigidity**: Theory of rigidity of energy spectrum
+5. **Odlyzko, A. M.**: Zero tables
 
 ---
 
-**작성자**: Cursor AI  
-**작성 일시**: 2025-12-21  
-**관련 파일**:
-- `script/9.py`: 스펙트럼 강성 예측 스크립트
-- `script/7.py`: 이전 예측 모델
-- `report/07_zero_prediction_report.md`: 영점 예측 리포트
-
+**Author**: Cursor AI  
+**Created**: 2025-12-21  
+**Related Files**:
+- `script/9.py`: Spectral rigidity prediction script
+- `script/7.py`: Previous prediction model
+- `report/07_zero_prediction_report.md`: Zero prediction report

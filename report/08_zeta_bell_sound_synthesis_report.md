@@ -1,30 +1,30 @@
-# 리만 제타 함수 영점 기반 소리 합성 분석 리포트
+# Riemann Zeta Function Zero-Based Sound Synthesis Analysis Report
 
-**생성 일시**: 2025-12-21  
-**스크립트**: `script/8.py`  
-**작성 목적**: 리만 제타 함수의 비자명 영점을 주파수로 변환하여 소리로 합성하는 과정 분석
-
----
-
-## 1. 개요
-
-이 리포트는 `script/8.py` 스크립트를 분석하고 실행한 결과를 문서화합니다. 이 스크립트는 리만 제타 함수의 비자명 영점(non-trivial zeros)을 주파수로 변환하여 "비가환적 화음"을 생성하는 소리 합성 프로그램입니다.
-
-### 1.1 목적
-
-- 리만 제타 함수의 영점들을 음향 신호로 변환
-- 영점들의 수학적 관계를 음악적 화음으로 표현
-- 비가환적 음계(non-commutative scale)의 구현
+**Created**: 2025-12-21  
+**Script**: `script/8.py`  
+**Purpose**: Analysis of the process of converting non-trivial zeros of the Riemann zeta function into frequencies for sound synthesis
 
 ---
 
-## 2. 스크립트 분석
+## 1. Overview
 
-### 2.1 주요 구성 요소
+This report analyzes and documents the execution results of the `script/8.py` script. This script is a sound synthesis program that converts non-trivial zeros of the Riemann zeta function into frequencies to generate "non-commutative harmonies."
 
-#### 2.1.1 데이터: 리만 제타 함수 영점
+### 1.1 Objectives
 
-스크립트는 리만 제타 함수의 처음 50개 비자명 영점의 허수부 값을 사용합니다:
+- Convert zeros of the Riemann zeta function into acoustic signals
+- Express mathematical relationships between zeros as musical harmonies
+- Implementation of non-commutative scale
+
+---
+
+## 2. Script Analysis
+
+### 2.1 Main Components
+
+#### 2.1.1 Data: Riemann Zeta Function Zeros
+
+The script uses the imaginary part values of the first 50 non-trivial zeros of the Riemann zeta function:
 
 ```python
 zeros = np.array([
@@ -36,100 +36,100 @@ zeros = np.array([
 ])
 ```
 
-**특징**:
-- 모든 영점의 실수부는 0.5 (리만 가설)
-- 허수부만 사용하여 주파수로 변환
-- 총 50개의 영점 사용
+**Features**:
+- Real part of all zeros is 0.5 (Riemann hypothesis)
+- Only imaginary parts used for frequency conversion
+- Total of 50 zeros used
 
-#### 2.1.2 주파수 매핑
+#### 2.1.2 Frequency Mapping
 
 ```python
-base_freq = 220.0  # A3 음 (라 음)
-ratio = zeros / zeros[0]  # 첫 번째 영점(14.1347)을 기준으로 비율 계산
-freq = base_freq * r  # 각 영점을 주파수로 변환
+base_freq = 220.0  # A3 note
+ratio = zeros / zeros[0]  # Calculate ratio relative to first zero (14.1347)
+freq = base_freq * r  # Convert each zero to frequency
 ```
 
-**매핑 방식**:
-- 첫 번째 영점 (14.1347) → 220 Hz (A3 음)
-- 나머지 영점들은 첫 번째 영점에 대한 비율로 주파수 결정
-- 예: 두 번째 영점 (21.0220) → 220 × (21.0220 / 14.1347) ≈ 327.2 Hz
+**Mapping method**:
+- First zero (14.1347) → 220 Hz (A3 note)
+- Other zeros determined by ratio relative to first zero
+- Example: Second zero (21.0220) → 220 × (21.0220 / 14.1347) ≈ 327.2 Hz
 
-**수학적 의미**:
-- 영점들 간의 비율 관계가 주파수 비율로 변환됨
-- 이는 전통적인 음계(12음 평균율 등)와는 다른 "비가환적 음계"를 형성
+**Mathematical meaning**:
+- Ratio relationships between zeros converted to frequency ratios
+- Forms a "non-commutative scale" different from traditional scales (12-tone equal temperament, etc.)
 
-#### 2.1.3 소리 합성 방법: Additive Synthesis
+#### 2.1.3 Sound Synthesis Method: Additive Synthesis
 
-각 영점을 독립적인 진동자(oscillator)로 변환하여 합성:
+Convert each zero into an independent oscillator for synthesis:
 
 ```python
 for i, r in enumerate(ratio):
     freq = base_freq * r
-    amplitude = 1.0 / (i + 1)**0.8  # 진폭 감쇠
-    decay = np.exp(-t * (i * 0.1 + 0.5))  # 시간에 따른 감쇠
+    amplitude = 1.0 / (i + 1)**0.8  # Amplitude decay
+    decay = np.exp(-t * (i * 0.1 + 0.5))  # Time-dependent decay
     waveform += amplitude * np.sin(2 * np.pi * freq * t) * decay
 ```
 
-**합성 파라미터**:
+**Synthesis parameters**:
 
-1. **진폭 (Amplitude)**:
+1. **Amplitude**:
    - `amplitude = 1.0 / (i + 1)^0.8`
-   - 높은 영점일수록 진폭이 감소
-   - 첫 번째 영점이 가장 강함
+   - Amplitude decreases for higher zeros
+   - First zero is strongest
 
-2. **감쇠 (Decay)**:
+2. **Decay**:
    - `decay = exp(-t * (i * 0.1 + 0.5))`
-   - 시간에 따라 지수적으로 감쇠
-   - 높은 영점일수록 더 빠르게 사라짐
-   - "종소리" 같은 질감 생성
+   - Exponentially decays over time
+   - Higher zeros disappear faster
+   - Creates "bell-like" texture
 
-3. **파형**:
-   - 순수 사인파 사용: `sin(2π × freq × t)`
-   - 각 영점이 독립적인 톤으로 합성됨
+3. **Waveform**:
+   - Pure sine wave: `sin(2π × freq × t)`
+   - Each zero synthesized as independent tone
 
-#### 2.1.4 정규화 및 저장
+#### 2.1.4 Normalization and Saving
 
 ```python
-waveform = waveform / np.max(np.abs(waveform))  # 정규화
-write(filename, sr, (sound_wave * 32767).astype(np.int16))  # WAV 파일 저장
+waveform = waveform / np.max(np.abs(waveform))  # Normalize
+write(filename, sr, (sound_wave * 32767).astype(np.int16))  # Save as WAV file
 ```
 
-- 최대 진폭을 1.0으로 정규화
-- 16비트 PCM 형식으로 저장 (범위: -32767 ~ 32767)
+- Normalize maximum amplitude to 1.0
+- Save in 16-bit PCM format (range: -32767 ~ 32767)
 
 ---
 
-## 3. 실행 결과
+## 3. Execution Results
 
-### 3.1 생성된 파일
+### 3.1 Generated File
 
-- **파일명**: `riemann_zeta_bell.wav`
-- **위치**: 프로젝트 루트 디렉토리 (`/home/seungun/project/P02/`)
-- **파일 크기**: 690 KB
-- **오디오 형식**: 
-  - RIFF WAVE 형식
+- **Filename**: `riemann_zeta_bell.wav`
+- **Location**: Project root directory (`/home/seungun/project/P02/`)
+- **File size**: 690 KB
+- **Audio format**: 
+  - RIFF WAVE format
   - Microsoft PCM
-  - 16비트, 모노
-  - 샘플링 레이트: 44,100 Hz
-  - 지속 시간: 8.0초
+  - 16-bit, mono
+  - Sampling rate: 44,100 Hz
+  - Duration: 8.0 seconds
 
-### 3.2 계산된 파라미터
+### 3.2 Calculated Parameters
 
-- **총 샘플 수**: 44,100 × 8.0 = 352,800 샘플
-- **사용된 영점 수**: 50개
-- **기본 주파수**: 220 Hz (A3)
-- **주파수 범위**: 
-  - 최저: 220 Hz (첫 번째 영점)
-  - 최고: 약 2,226 Hz (50번째 영점, 143.1118 / 14.1347 × 220)
+- **Total samples**: 44,100 × 8.0 = 352,800 samples
+- **Number of zeros used**: 50
+- **Base frequency**: 220 Hz (A3)
+- **Frequency range**: 
+  - Minimum: 220 Hz (first zero)
+  - Maximum: Approximately 2,226 Hz (50th zero, 143.1118 / 14.1347 × 220)
 
-### 3.3 음향 특성 분석
+### 3.3 Acoustic Characteristics Analysis
 
-#### 3.3.1 주파수 분포
+#### 3.3.1 Frequency Distribution
 
-영점들의 비율을 주파수로 변환하면:
+Converting zero ratios to frequencies:
 
-| 영점 번호 | 영점 값 (허수부) | 주파수 (Hz) | 음높이 (근사) |
-|----------|----------------|------------|-------------|
+| Zero # | Zero Value (Imaginary) | Frequency (Hz) | Approximate Pitch |
+|--------|------------------------|----------------|-------------------|
 | 1 | 14.1347 | 220.0 | A3 |
 | 2 | 21.0220 | 327.2 | E4 |
 | 3 | 25.0109 | 389.5 | G4 |
@@ -139,65 +139,65 @@ write(filename, sr, (sound_wave * 32767).astype(np.int16))  # WAV 파일 저장
 | 40 | 122.9468 | 1,916.0 | B6 |
 | 50 | 143.1118 | 2,226.0 | C#7 |
 
-**관찰**:
-- 주파수 분포가 비선형적이며, 전통적인 음계와는 다른 패턴
-- 영점 간격이 일정하지 않아 주파수 간격도 불규칙함
+**Observations**:
+- Frequency distribution is nonlinear, different from traditional scales
+- Irregular frequency spacing due to irregular zero spacing
 
-#### 3.3.2 진폭 및 감쇠 패턴
+#### 3.3.2 Amplitude and Decay Patterns
 
-- **첫 번째 영점**: 진폭 1.0, 느린 감쇠
-- **50번째 영점**: 진폭 약 0.027, 빠른 감쇠
+- **First zero**: Amplitude 1.0, slow decay
+- **50th zero**: Amplitude approximately 0.027, fast decay
 
-이로 인해:
-- 초기에는 모든 영점이 함께 울림
-- 시간이 지나면서 낮은 주파수(낮은 영점)가 더 오래 지속됨
-- "종소리" 또는 "벨" 같은 음색 생성
+This results in:
+- All zeros ringing together initially
+- Lower frequencies (lower zeros) persist longer over time
+- "Bell" or "chime" like timbre
 
 ---
 
-## 4. 수학적 배경
+## 4. Mathematical Background
 
-### 4.1 리만 제타 함수와 영점
+### 4.1 Riemann Zeta Function and Zeros
 
-리만 제타 함수 ζ(s)는 다음과 같이 정의됩니다:
+The Riemann zeta function ζ(s) is defined as:
 
 ```
 ζ(s) = Σ(n=1 to ∞) 1/n^s
 ```
 
-여기서 s = σ + it (복소수).
+where s = σ + it (complex number).
 
-**리만 가설**: 모든 비자명 영점의 실수부는 1/2입니다.
+**Riemann Hypothesis**: The real part of all non-trivial zeros is 1/2.
 
-즉, 영점들은 s = 1/2 + it 형태입니다.
+That is, zeros are of the form s = 1/2 + it.
 
-### 4.2 영점의 물리적 해석
+### 4.2 Physical Interpretation of Zeros
 
-이 스크립트는 영점들을 다음과 같이 해석합니다:
+This script interprets zeros as follows:
 
-1. **주파수 공간의 점**: 각 영점의 허수부 t가 주파수와 관련됨
-2. **에너지 레벨**: 영점의 순서가 에너지 레벨을 나타냄
-3. **비가환적 관계**: 영점들 간의 관계가 전통적인 음악 이론과 다름
+1. **Points in frequency space**: Imaginary part t of each zero relates to frequency
+2. **Energy levels**: Order of zeros represents energy levels
+3. **Non-commutative relationships**: Relationships between zeros differ from traditional music theory
 
-### 4.3 비가환적 음계
+### 4.3 Non-Commutative Scale
 
-전통적인 음계(예: 12음 평균율)는 주파수 비율이 유리수 관계입니다:
-- 옥타브: 2:1
-- 완전5도: 3:2
-- 장3도: 5:4
+Traditional scales (e.g., 12-tone equal temperament) have frequency ratios that are rational number relationships:
+- Octave: 2:1
+- Perfect fifth: 3:2
+- Major third: 5:4
 
-반면, 리만 제타 함수의 영점들은:
-- 비율이 무리수에 가까움
-- 간격이 불규칙함
-- "비가환적" 관계를 가짐
+In contrast, zeros of the Riemann zeta function:
+- Ratios are close to irrational numbers
+- Irregular spacing
+- Have "non-commutative" relationships
 
 ---
 
-## 5. 기술적 세부사항
+## 5. Technical Details
 
-### 5.1 구현 특징
+### 5.1 Implementation Features
 
-1. **선택적 IPython 지원**:
+1. **Optional IPython support**:
    ```python
    try:
        import IPython.display as ipd
@@ -205,49 +205,49 @@ write(filename, sr, (sound_wave * 32767).astype(np.int16))  # WAV 파일 저장
    except ImportError:
        HAS_IPYTHON = False
    ```
-   - 주피터 노트북 환경과 일반 Python 환경 모두 지원
+   - Supports both Jupyter notebook and regular Python environments
 
-2. **수치 안정성**:
-   - 정규화를 통해 오버플로우 방지
-   - 16비트 정수 변환 시 적절한 스케일링
+2. **Numerical stability**:
+   - Prevents overflow through normalization
+   - Appropriate scaling for 16-bit integer conversion
 
-3. **효율성**:
-   - NumPy 벡터화 연산 사용
-   - 루프 최소화
+3. **Efficiency**:
+   - Uses NumPy vectorized operations
+   - Minimizes loops
 
-### 5.2 개선 가능한 부분
+### 5.2 Areas for Improvement
 
-1. **스테레오 지원**: 현재 모노만 지원
-2. **다양한 파형**: 사인파 외에 다른 파형 옵션
-3. **인터랙티브 파라미터**: 진폭, 감쇠 등을 조절 가능하게
-4. **시각화**: 주파수 스펙트럼 시각화 추가
-
----
-
-## 6. 결론 및 관찰
-
-### 6.1 주요 성과
-
-1. **수학적 개념의 음향화**: 리만 제타 함수의 영점을 소리로 변환
-2. **비가환적 음계 구현**: 전통적인 음악 이론과 다른 음계 체계
-3. **실용적 구현**: 실제 재생 가능한 WAV 파일 생성
-
-### 6.2 수학적 의미
-
-- 리만 제타 함수의 영점들이 가지는 "음악적" 특성 발견
-- 영점 간격의 불규칙성이 음향적으로 표현됨
-- 수학적 구조와 음악적 구조의 연결
-
-### 6.3 향후 연구 방향
-
-1. **더 많은 영점 사용**: 50개 이상의 영점으로 확장
-2. **다양한 합성 방법**: FM 합성, 웨이블릿 변환 등
-3. **영점 예측 모델과의 연계**: 예측된 영점을 소리로 변환
-4. **시각화 통합**: 주파수 스펙트로그램, 파형 시각화
+1. **Stereo support**: Currently only mono
+2. **Various waveforms**: Options other than sine waves
+3. **Interactive parameters**: Adjustable amplitude, decay, etc.
+4. **Visualization**: Add frequency spectrum visualization
 
 ---
 
-## 7. 참고 문헌
+## 6. Conclusions and Observations
+
+### 6.1 Main Achievements
+
+1. **Sonification of mathematical concepts**: Conversion of Riemann zeta function zeros into sound
+2. **Non-commutative scale implementation**: Scale system different from traditional music theory
+3. **Practical implementation**: Generation of playable WAV files
+
+### 6.2 Mathematical Meaning
+
+- Discovery of "musical" properties of Riemann zeta function zeros
+- Acoustic expression of irregularity in zero spacing
+- Connection between mathematical and musical structures
+
+### 6.3 Future Research Directions
+
+1. **Use more zeros**: Extend to 50+ zeros
+2. **Various synthesis methods**: FM synthesis, wavelet transforms, etc.
+3. **Integration with zero prediction models**: Convert predicted zeros to sound
+4. **Visualization integration**: Frequency spectrograms, waveform visualization
+
+---
+
+## 7. References
 
 1. **Riemann, B. (1859)**: "Über die Anzahl der Primzahlen unter einer gegebenen Größe"
 2. **Edwards, H. M. (2001)**: "Riemann's Zeta Function"
@@ -256,52 +256,51 @@ write(filename, sr, (sound_wave * 32767).astype(np.int16))  # WAV 파일 저장
 
 ---
 
-## 8. 부록
+## 8. Appendix
 
-### 8.1 실행 명령어
+### 8.1 Execution Commands
 
 ```bash
-# 가상환경 활성화
+# Activate virtual environment
 source venv/bin/activate
 
-# 스크립트 실행
+# Run script
 python script/8.py
 ```
 
-### 8.2 생성된 파일 정보
+### 8.2 Generated File Information
 
-- **파일명**: `riemann_zeta_bell.wav`
-- **형식**: WAV (PCM 16-bit, Mono, 44.1 kHz)
-- **크기**: 690 KB
-- **지속 시간**: 8.0초
+- **Filename**: `riemann_zeta_bell.wav`
+- **Format**: WAV (PCM 16-bit, Mono, 44.1 kHz)
+- **Size**: 690 KB
+- **Duration**: 8.0 seconds
 
-### 8.3 코드 구조
+### 8.3 Code Structure
 
 ```
 generate_zeta_bell()
-├── 영점 데이터 로드
-├── 시간축 생성
-├── 주파수 매핑
-├── 진동자 합성 (루프)
-│   ├── 주파수 계산
-│   ├── 진폭 계산
-│   ├── 감쇠 계산
-│   └── 파형 합성
-├── 정규화
-└── 반환
+├── Load zero data
+├── Generate time axis
+├── Frequency mapping
+├── Oscillator synthesis (loop)
+│   ├── Frequency calculation
+│   ├── Amplitude calculation
+│   ├── Decay calculation
+│   └── Waveform synthesis
+├── Normalization
+└── Return
 
-메인 실행
-├── 함수 호출
-├── WAV 파일 저장
-└── 출력 메시지
+Main execution
+├── Function call
+├── WAV file save
+└── Output message
 ```
 
 ---
 
-**작성자**: Cursor AI  
-**작성 일시**: 2025-12-21  
-**관련 파일**:
-- `script/8.py`: 소리 합성 스크립트
-- `riemann_zeta_bell.wav`: 생성된 오디오 파일
-- `plan/plan01.md`: 프로젝트 계획 문서
-
+**Author**: Cursor AI  
+**Created**: 2025-12-21  
+**Related Files**:
+- `script/8.py`: Sound synthesis script
+- `riemann_zeta_bell.wav`: Generated audio file
+- `plan/plan01.md`: Project planning document
