@@ -1,115 +1,114 @@
-# P02 프로젝트: 리만 제타 함수 시각화 및 시뮬레이션
+# P02 Project: Riemann Zeta Function Visualization and Simulation
 
-## 프로젝트 개요
+## Project Overview
 
-P02 프로젝트는 리만 제타 함수(Riemann Zeta Function)의 비자명 영점(non-trivial zeros)에 대한 시각화 및 시뮬레이션을 수행하는 프로젝트입니다. 
+The P02 project performs visualization and simulation of non-trivial zeros of the Riemann Zeta Function.
 
-P01 프로젝트에서 다룬 소수 분포와 리만 가설 연구를 기반으로, 리만 제타 함수의 영점들이 가지는 수학적 특성과 물리적 의미를 탐구합니다.
+Based on the prime distribution analysis and Riemann hypothesis research covered in the P01 project, this project explores the mathematical properties and physical interpretations of the zeros of the Riemann zeta function.
 
-## 프로젝트 구조
+## Project Structure
 
 ```
 P02/
-├── data/              # 데이터 파일
-├── log/               # 로그 파일
-│   ├── chat log/      # 채팅 로그
-│   └── job log/       # 작업 로그
-├── plan/              # 계획 문서
-├── report/            # 분석 보고서
-├── script/            # Python 스크립트
-│   ├── 1.py          # 리만 제타 함수 시뮬레이션 (비가환 소음)
-│   ├── 2.py          # 에너지 지형 시각화
-│   ├── 3.py          # 입자 시뮬레이션
-│   ├── 4.py          # 벡터장 시각화
-│   ├── 5.py          # 쿨롱 가스 시뮬레이션
-│   ├── 7.py          # 영점 예측 (1단계: 거시적 예측)
-│   ├── 8.py          # 제타 벨 소리 생성
-│   ├── 9.py          # 스펙트럼 강성 예측 (2단계: 미시적 보정)
-│   └── 10.py         # 카오스 파동 예측 (3단계: 정밀화)
-└── README.md          # 본 파일
+├── data/              # Data files
+├── log/               # Log files
+│   ├── chat log/      # Chat logs
+│   └── job log/       # Job logs
+├── plan/              # Planning documents
+├── report/            # Analysis reports
+├── script/            # Python scripts
+│   ├── 1.py          # Riemann zeta function simulation (non-commutative noise)
+│   ├── 2.py          # Energy landscape visualization
+│   ├── 3.py          # Particle simulation
+│   ├── 4.py          # Vector field visualization
+│   ├── 5.py          # Coulomb gas simulation
+│   ├── 7.py          # Zero prediction (Step 1: Macroscopic prediction)
+│   ├── 8.py          # Zeta bell sound generation
+│   ├── 9.py          # Spectral rigidity prediction (Step 2: Microscopic correction)
+│   └── 10.py         # Chaos wave prediction (Step 3: Refinement)
+└── README.md          # This file
 
 ```
 
-## 주요 스크립트 설명
+## Main Script Descriptions
 
-### 1.py - 리만 제타 함수 시뮬레이션
-비가환 소음(non-commutative noise)을 적용한 리만 제타 함수의 근사값 계산 및 시각화. 리만의 세계(질서)와 불확정 군의 세계(혼돈)를 비교 분석.
+### 1.py - Riemann Zeta Function Simulation
+Approximation and visualization of the Riemann zeta function with non-commutative noise applied. Comparative analysis of Riemann's world (order) and the world of indefinite groups (chaos).
 
-### 2.py - 에너지 지형 시각화
-복소평면 상의 에너지 지형을 계산하여 영점의 안정성을 분석. 질서 에너지와 혼돈 에너지의 합으로 시스템 에너지를 계산.
+### 2.py - Energy Landscape Visualization
+Analysis of zero stability by calculating the energy landscape on the complex plane. System energy is computed as the sum of order energy and chaos energy.
 
-### 3.py - 입자 시뮬레이션
-에너지 함수의 기울기를 따라 이동하는 입자들의 진화 과정을 시뮬레이션. 영점 근처로 수렴하는 입자들의 궤적을 시각화.
+### 3.py - Particle Simulation
+Simulation of the evolution process of particles moving along the gradient of the energy function. Visualization of particle trajectories converging near zeros.
 
-### 4.py - 벡터장 시각화
-에너지 기울기에 따른 벡터장(유동장)을 계산하여 영점이 '싱크(Sink)'로 작용하는 흐름을 시각화.
+### 4.py - Vector Field Visualization
+Visualization of flow where zeros act as 'sinks' by calculating vector fields (flow fields) based on energy gradients.
 
-### 5.py - 쿨롱 가스 시뮬레이션
-영점들 간의 척력(repulsion)을 시뮬레이션하여 중근(multiple roots)이 불가능한 이유를 물리적으로 설명.
+### 5.py - Coulomb Gas Simulation
+Physical explanation of why multiple roots are impossible by simulating repulsion between zeros.
 
-### 7.py - 영점 예측 (1단계: 거시적 예측)
-리만-폰 망골트 공식을 이용한 거시적 예측과 쿨롱 척력을 이용한 미시적 예측을 결합하여 다음 영점의 위치를 예측하는 모델.
+### 7.py - Zero Prediction (Step 1: Macroscopic Prediction)
+A model that predicts the location of the next zero by combining macroscopic prediction using the Riemann-von Mangoldt formula and microscopic prediction using Coulomb repulsion.
 
-### 8.py - 제타 벨 소리 생성
-리만 제타 함수의 영점들을 주파수로 변환하여 소리로 합성. 비가환적 화음을 생성.
+### 8.py - Zeta Bell Sound Generation
+Synthesis of sound by converting zeros of the Riemann zeta function into frequencies. Generates non-commutative harmonies.
 
-### 9.py - 스펙트럼 강성 예측 (2단계: 미시적 보정)
-GUE 이론의 스펙트럼 강성(Spectral Rigidity) 개념을 적용하여 영점 예측을 개선. 인접 영점들의 편차 상관성을 반영한 미시적 보정 모델.
+### 9.py - Spectral Rigidity Prediction (Step 2: Microscopic Correction)
+Improvement of zero prediction by applying the concept of Spectral Rigidity from GUE theory. A microscopic correction model that reflects the correlation of deviations between adjacent zeros.
 
-### 10.py - 카오스 파동 예측 (3단계: 정밀화)
-리만-지겔 Z-함수 근사를 이용한 카오스 엔진으로 영점 위치를 정밀하게 계산. 소수들의 파동 간섭을 통한 최종 정밀화 단계.
+### 10.py - Chaos Wave Prediction (Step 3: Refinement)
+Precise calculation of zero locations using a chaos engine based on Riemann-Siegel Z-function approximation. Final refinement step through wave interference of primes.
 
-## 3단계 영점 예측 프로세스
+## 3-Step Zero Prediction Process
 
-영점 예측은 세 단계로 구성된 정밀화 프로세스를 따릅니다:
+Zero prediction follows a three-step refinement process:
 
-1. **1단계 (script/7.py) - 거시적 예측**: 리만-폰 망골트 공식을 이용한 이론적 위치 계산
-2. **2단계 (script/9.py) - 미시적 보정**: 스펙트럼 강성을 이용한 편차 보정
-3. **3단계 (script/10.py) - 카오스 엔진**: 리만-지겔 Z-함수 근사를 이용한 정밀 계산
+1. **Step 1 (script/7.py) - Macroscopic Prediction**: Calculation of theoretical location using the Riemann-von Mangoldt formula
+2. **Step 2 (script/9.py) - Microscopic Correction**: Deviation correction using spectral rigidity
+3. **Step 3 (script/10.py) - Chaos Engine**: Precise calculation using Riemann-Siegel Z-function approximation
 
-각 단계마다 정확도가 향상되어 최종적으로 오차 0.001 미만의 정밀한 예측이 가능합니다.
+Accuracy improves at each step, enabling precise prediction with error less than 0.001 in the final stage.
 
-## 의존성
+## Dependencies
 
-주요 Python 패키지:
+Main Python packages:
 - numpy
 - matplotlib
 - scipy
 
-자세한 내용은 `requirements.txt`를 참조하세요.
+For details, please refer to `requirements.txt`.
 
-## 사용 방법
+## Usage
 
-1. 가상환경 생성 및 활성화:
+1. Create and activate virtual environment:
 ```bash
 python3 -m venv venv
 source venv/bin/activate  # Linux/Mac
 ```
 
-2. 의존성 설치:
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 스크립트 실행:
+3. Run scripts:
 ```bash
 python script/1.py
 ```
 
-## 관련 프로젝트
+## Related Projects
 
-- **P01**: 소수 분포 분석 및 리만 가설 연구
+- **P01**: Prime distribution analysis and Riemann hypothesis research
 
-## 참고 문헌
+## References
 
 - Riemann, B. (1859): "Über die Anzahl der Primzahlen unter einer gegebenen Größe"
 - Edwards, H. M. (2001): "Riemann's Zeta Function"
 - Davenport, H. (2000): "Multiplicative Number Theory"
-- von Mangoldt, H. (1905): 리만-폰 망골트 공식
-- Siegel, C. L. (1932): 리만-지겔 공식
-- GUE Theory: Gaussian Unitary Ensemble 및 랜덤 행렬 이론
+- von Mangoldt, H. (1905): Riemann-von Mangoldt formula
+- Siegel, C. L. (1932): Riemann-Siegel formula
+- GUE Theory: Gaussian Unitary Ensemble and random matrix theory
 
-## 라이선스
+## License
 
-이 프로젝트는 연구 및 교육 목적으로 작성되었습니다.
-
+This project is created for research and educational purposes.
