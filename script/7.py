@@ -81,8 +81,10 @@ plt.yticks([])
 plt.xlim(90, 105)
 plt.legend()
 plt.grid(True, axis='x', alpha=0.3)
-
-plt.show()
+plt.tight_layout()
+plt.savefig('data/figure6_zero_prediction.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Figure 6 saved: data/figure6_zero_prediction.png")
 
 # 오차 계산
 error_macro = abs(target_zero - macro_prediction)

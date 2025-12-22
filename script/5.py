@@ -61,7 +61,10 @@ plt.text(10, history[0, 1] + 0.5, "Close Initial State\n(Near Collision)", color
 plt.text(180, history[-1, -2] - 1, "Stable Lattice\n(No Merging)", color='green', fontsize=10)
 
 plt.grid(True, alpha=0.3)
-plt.show()
+plt.tight_layout()
+plt.savefig('data/figure5a_coulomb_gas_evolution.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Figure 5a saved: data/figure5a_coulomb_gas_evolution.png")
 
 # --- 간격 분포 확인 (Pair Correlation) ---
 final_positions = history[-1]
@@ -74,4 +77,7 @@ plt.xlabel('Distance to Next Zero', fontsize=10)
 plt.ylabel('Frequency', fontsize=10)
 plt.axvline(x=0, color='red', linestyle='--', label='Distance 0 (Multiple Root)')
 plt.legend()
-plt.show()
+plt.tight_layout()
+plt.savefig('data/figure5b_coulomb_gas_spacing.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Figure 5b saved: data/figure5b_coulomb_gas_spacing.png")

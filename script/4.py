@@ -68,4 +68,6 @@ plt.xlim(0.1, 0.9)
 plt.ylim(12, 26)
 
 plt.tight_layout()
-plt.show()
+plt.savefig('data/figure4_vector_field.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Figure 4 saved: data/figure4_vector_field.png")

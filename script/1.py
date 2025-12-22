@@ -68,4 +68,7 @@ plt.grid(True, alpha=0.3)
 plt.annotate('1st Zero (Order)', xy=(14.13, 0), xytext=(10, 3),
              arrowprops=dict(facecolor='black', shrink=0.05))
 
-plt.show()
+plt.tight_layout()
+plt.savefig('data/figure1_non_commutative_noise.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Figure 1 saved: data/figure1_non_commutative_noise.png")

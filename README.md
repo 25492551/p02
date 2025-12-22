@@ -6,6 +6,22 @@ The P02 project performs visualization and simulation of non-trivial zeros of th
 
 Based on the prime distribution analysis and Riemann hypothesis research covered in the P01 project, this project explores the mathematical properties and physical interpretations of the zeros of the Riemann zeta function.
 
+
+## Abstract
+This paper presents a comprehensive study of the non-trivial zeros of the Riemann Zeta function through visualization and simulation techniques. The Riemann Zeta function, defined as $\zeta(s) = \sum_{n=1}^{\infty} \frac{1}{n^s}$ for $\Re(s) > 1$ and extended analytically to the complex plane, plays a central role in number theory, particularly in the distribution of prime numbers through its connection to the prime counting function via the explicit formula.
+
+The non-trivial zeros of the Riemann Zeta function, which lie in the critical strip $0 < \Re(s) < 1$, are conjectured to all lie on the critical line $\Re(s) = \frac{1}{2}$ according to the Riemann Hypothesis. Understanding the distribution and properties of these zeros has profound implications for number theory and mathematical physics.
+
+In this work, we develop computational methods to visualize and simulate the behavior of these zeros. We explore several approaches: (1) energy landscape visualization, which maps the potential energy associated with the zeros; (2) particle simulation models that treat zeros as interacting particles subject to repulsive forces; (3) Coulomb gas models that describe the statistical mechanics of zero distributions; (4) vector field visualizations that represent the complex structure of the Zeta function; and (5) predictive models for zero locations using both statistical and physical approaches.
+
+Our simulations reveal interesting patterns in the distribution of zeros, including repulsion effects and energy landscapes that suggest underlying physical interpretations. We also develop methods for synthesizing sound from zero frequencies, providing an alternative perspective on the mathematical structure. The spectral rigidity and chaos wave predictions offer new insights into the statistical properties of zero distributions.
+
+The main contributions of this paper include: (1) novel visualization techniques for understanding zero distributions; (2) physical interpretations of zero interactions through particle and Coulomb gas models; (3) predictive algorithms for zero locations; and (4) interdisciplinary connections between number theory and physics through sound synthesis and energy landscape analysis.
+
+This work fits within the broader context of computational number theory and mathematical physics, building on classical results about the Zeta function while introducing modern computational and visualization techniques. Our approach bridges theoretical mathematics with computational exploration, providing new perspectives on one of mathematics' most fundamental objects.
+
+
+
 ## Project Structure
 
 ```

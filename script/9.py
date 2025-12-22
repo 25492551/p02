@@ -64,3 +64,25 @@ print(f"New Error:           {error_new:.4f}")
 
 improvement = 0.1322 - error_new
 print(f"Improvment:          {improvement:.4f}")
+
+# --- 6. 시각화 ---
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+# 실제 영점들
+plt.scatter(train_zeros, np.zeros_like(train_zeros), color='black', marker='|', s=100, label='Past Zeros')
+plt.scatter(target_zero, 0, color='lime', marker='*', s=300, zorder=10, label=f'Actual 30th ({target_zero:.4f})')
+plt.scatter(theory_30, 0, color='blue', marker='v', s=100, label=f'Theoretical ({theory_30:.4f})')
+plt.scatter(predicted_30, 0, color='red', marker='^', s=100, label=f'Predicted ({predicted_30:.4f})')
+
+plt.title('Spectral Rigidity Prediction: 30th Zero', fontsize=14)
+plt.xlabel('Imaginary Part (t)', fontsize=12)
+plt.ylabel('', fontsize=12)
+plt.yticks([])
+plt.xlim(95, 103)
+plt.legend()
+plt.grid(True, axis='x', alpha=0.3)
+plt.tight_layout()
+plt.savefig('data/figure7_spectral_rigidity.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Figure 7 saved: data/figure7_spectral_rigidity.png")

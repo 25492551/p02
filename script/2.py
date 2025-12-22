@@ -54,4 +54,7 @@ plt.title('The Eye of the Storm: Stability of Zeros in Uncertainty Group', fonts
 plt.xlabel('Real Part (Re(s))')
 plt.ylabel('Imaginary Part (Im(s))')
 plt.legend()
-plt.show()
+plt.tight_layout()
+plt.savefig('data/figure2_energy_landscape.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Figure 2 saved: data/figure2_energy_landscape.png")
