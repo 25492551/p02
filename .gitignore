@@ -32,3 +32,5 @@ Thumbs.db
 # Logs (optional - uncomment if you don't want to track logs)
 # log/
 
+# Journal
+data/
