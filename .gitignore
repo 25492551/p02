@@ -29,6 +29,9 @@ Thumbs.db
 *.jpeg
 *.pdf
 
+# Large generated logs/results (avoid GitHub 100MB limit)
+06_docs/gpu_scalability_*results*.txt
+
 # Logs (optional - uncomment if you don't want to track logs)
 # log/
 
