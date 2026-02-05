@@ -216,6 +216,30 @@ This file tracks all job logs for the P02 project.
   - xhtml2pdf not installed (requires system libcairo2-dev); optional step documented in job log
   - Activate venv: `source venv/bin/activate`
 
+### 20260205T074743_update_duration_terminal_reporting_gpu_usage_check.md
+- **Job Date/Time**: 2026-02-05T074743
+- **Job Overview**: Update duration-mode logging to report key runtime info on the running terminal and add basic GPU usage checks (nvidia-smi memory/util + process GPU memory).
+- **Changed Files**:
+  - Modified: `03_script/16_scalability_test_gpu.py`
+  - New: `02_log/02_job/20260205T074743_update_duration_terminal_reporting_gpu_usage_check.md`
+- **Key Details**:
+  - Implemented tee-style logger so `--duration --output ...` prints to terminal and writes to file
+  - Added header diagnostics: backend, PID, Python/NumPy/CuPy versions, CUDA_VISIBLE_DEVICES, GPU device info
+  - Added periodic fields: `gpu_mem_mb` and `proc_gpu_mem_mb` (best-effort via nvidia-smi)
+  - Fixed datetime UTC deprecation warnings by using timezone-aware UTC timestamps
+
+### 20260205T075514_update_usage_guide_with_terminal_gpu_usage_fields.md
+- **Job Date/Time**: 2026-02-05T075514
+- **Job Overview**: Update the usage guide to document tee-style duration logging and new GPU usage fields (`gpu_mem_mb`, `proc_gpu_mem_mb`).
+- **Changed Files**:
+  - Modified: `06_docs/11_16_scalability_test_gpu_usage.md`
+  - New: `02_log/02_job/20260205T075514_update_usage_guide_with_terminal_gpu_usage_fields.md`
+- **Key Details**:
+  - Documented duration-mode output behavior (terminal + output file)
+  - Documented header diagnostics (backend, PID, versions, CUDA_VISIBLE_DEVICES, GPU device info)
+  - Documented new periodic GPU usage fields and added an example log line
+  - Expanded troubleshooting guidance (pacing and sampling limitations; disable with `--util-max 0`)
+
 ## Job Log Writing Rules
 
 1. Before starting a job: Check previous job logs
@@ -237,3 +261,5 @@ This file tracks all job logs for the P02 project.
 - 2026-01-25: 20260125T164308_compress_job_logs.md added
 - 2026-01-25: Old job logs compressed into `job_logs_archive.zip` (10 files)
 - 2026-02-05: 20260205T143500_init_venv_requirements.md added
+- 2026-02-05: 20260205T074743_update_duration_terminal_reporting_gpu_usage_check.md added
+- 2026-02-05: 20260205T075514_update_usage_guide_with_terminal_gpu_usage_fields.md added

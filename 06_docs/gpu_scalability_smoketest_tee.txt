@@ -1,0 +1,25 @@
+GPU Scalability Test — duration run (light logging + util cap)
+Started: 2026-02-05T074704Z UTC
+Target duration: 15 s (0.00 hours)
+Output file: 06_docs/gpu_scalability_smoketest_tee.txt
+Backend: CuPy (GPU) | pid=44501 | python=3.12.3 numpy=2.4.2 cupy=13.6.0
+GPU device: index=0 name=NVIDIA RTX PRO 4000 Blackwell cc=12.0 mem_total_mb=23946.125
+Util cap: 0.0%  (samples=5, interval=0.2s)
+Log interval: 5.0s
+============================================================
+2026-02-05T074710Z backend=cupy runs=5 (+5) zeros=24505 (+24505) ms/zero=0.004 err_mean%=0.0587 err_max%=0.7267 gpu_util%~=2.2 gpu_mem_mb=2739/24467 proc_gpu_mem_mb=226 sleep_added=0.00s rem=9s
+2026-02-05T074715Z backend=cupy runs=10 (+5) zeros=49010 (+24505) ms/zero=0.002 err_mean%=0.0587 err_max%=0.7267 gpu_util%~=2.1 gpu_mem_mb=2731/24467 proc_gpu_mem_mb=226 sleep_added=0.00s rem=4s
+
+============================================================
+DURATION RUN SUMMARY
+============================================================
+Total runs: 14
+Total zeros tested: 68614
+Target duration: 15 s
+Finished: 2026-02-05T074720Z UTC
+
+Aggregate timing (per zero): mean 0.003 ms
+Aggregate error (relative): mean 0.0587%  max 0.7267%
+GPU util sampled avg: 2.1%  (samples=14)
+============================================================
+GPU scalability duration run completed.

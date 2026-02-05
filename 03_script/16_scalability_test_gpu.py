@@ -15,10 +15,11 @@ See 06_docs/gpu_scalability_low_utilization_analysis.md for details.
 """
 
 import argparse
+import os
 import subprocess
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 import numpy as np
 
@@ -148,6 +149,112 @@ def sample_gpu_utilization_percent(samples=3, interval_sec=0.1):
     if not vals:
         return None
     return float(sum(vals) / len(vals))
+
+
+def _run_nvidia_smi_query(args):
+    """
+    Run a nvidia-smi query command and return stdout string, or None if unavailable.
+    args: list of command arguments after 'nvidia-smi'.
+    """
+    try:
+        out = subprocess.check_output(["nvidia-smi", *args], stderr=subprocess.DEVNULL, text=True).strip()
+        return out if out else None
+    except Exception:
+        return None
+
+
+def get_gpu_device_info():
+    """
+    Return a dict of GPU/backend info for logging.
+    Works best with CuPy; falls back to minimal info if not available.
+    """
+    info = {
+        "pid": int(os.getpid()),
+        "python": sys.version.split()[0],
+        "numpy": getattr(np, "__version__", "unknown"),
+        "cupy_available": bool(_CUPY_AVAILABLE),
+        "cupy": getattr(cp, "__version__", None) if _CUPY_AVAILABLE else None,
+        "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES", ""),
+        "backend": "CuPy (GPU)" if _CUPY_AVAILABLE else "NumPy (CPU fallback)",
+        "gpu_index": None,
+        "gpu_name": None,
+        "gpu_cc": None,
+        "gpu_mem_total_mb": None,
+    }
+
+    if _CUPY_AVAILABLE:
+        try:
+            dev = int(cp.cuda.runtime.getDevice())
+            info["gpu_index"] = dev
+            props = cp.cuda.runtime.getDeviceProperties(dev)
+            # props is a dict-like object
+            info["gpu_name"] = props.get("name", b"").decode("utf-8", errors="replace") if isinstance(props.get("name"), (bytes, bytearray)) else props.get("name")
+            info["gpu_cc"] = f'{props.get("major")}.{props.get("minor")}'
+            total_mem = props.get("totalGlobalMem")
+            if total_mem:
+                info["gpu_mem_total_mb"] = float(total_mem) / (1024 ** 2)
+        except Exception:
+            pass
+    return info
+
+
+def query_gpu_memory_and_util(gpu_index=None):
+    """
+    Query GPU memory.used, memory.total, utilization.gpu for a given GPU index via nvidia-smi.
+    Returns dict with keys: mem_used_mb, mem_total_mb, util_percent; missing values are None.
+    """
+    out = _run_nvidia_smi_query(
+        [
+            "--query-gpu=index,memory.used,memory.total,utilization.gpu",
+            "--format=csv,noheader,nounits",
+            *([] if gpu_index is None else ["-i", str(int(gpu_index))]),
+        ]
+    )
+    if not out:
+        return {"mem_used_mb": None, "mem_total_mb": None, "util_percent": None}
+    # If multiple GPUs returned, take first line.
+    line = out.splitlines()[0].strip()
+    parts = [p.strip() for p in line.split(",")]
+    if len(parts) < 4:
+        return {"mem_used_mb": None, "mem_total_mb": None, "util_percent": None}
+    try:
+        return {
+            "mem_used_mb": float(parts[1]),
+            "mem_total_mb": float(parts[2]),
+            "util_percent": float(parts[3]),
+        }
+    except Exception:
+        return {"mem_used_mb": None, "mem_total_mb": None, "util_percent": None}
+
+
+def query_process_gpu_memory_mb(pid=None):
+    """
+    Query this process GPU memory usage (MB) via nvidia-smi compute apps.
+    Returns float MB (sum across GPUs) or None if nvidia-smi query not available.
+    """
+    pid = int(os.getpid()) if pid is None else int(pid)
+    out = _run_nvidia_smi_query(["--query-compute-apps=pid,used_memory", "--format=csv,noheader,nounits"])
+    if out is None:
+        return None
+    total = 0.0
+    found = False
+    for line in out.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        parts = [p.strip() for p in line.split(",")]
+        if len(parts) != 2:
+            continue
+        try:
+            lp = int(parts[0])
+            if lp != pid:
+                continue
+            mem = float(parts[1])
+            total += mem
+            found = True
+        except Exception:
+            continue
+    return total if found else 0.0
 
 
 def riemann_n_formula(t, n, xp):
@@ -530,19 +637,40 @@ def run_for_duration(
     Logging is lightweight: periodic one-line summaries (log_interval_sec) + final summary.
     Utilization cap: if sampled GPU util > util_max_percent, sleep briefly to reduce duty cycle.
     """
-    old_stdout = sys.stdout
+    terminal_out = sys.stdout
     f = None
     if output_path:
         f = open(output_path, "w", encoding="utf-8")
-        sys.stdout = f
+
+    def log_line(s):
+        # Always report on running terminal, and also write to output file if provided.
+        try:
+            print(s, file=terminal_out, flush=True)
+        except Exception:
+            pass
+        if f is not None:
+            f.write(str(s) + "\n")
+            f.flush()
     try:
-        print("GPU Scalability Test — duration run (light logging + util cap)")
-        print(f"Started: {datetime.utcnow().strftime('%Y-%m-%dT%H%M%SZ')} UTC")
-        print(f"Target duration: {duration_seconds} s ({duration_seconds / 3600:.2f} hours)")
-        print(f"Output file: {output_path or '(stdout)'}")
-        print(f"Util cap: {util_max_percent:.1f}%  (samples={util_samples}, interval={util_interval_sec}s)")
-        print(f"Log interval: {log_interval_sec:.1f}s")
-        print("=" * 60)
+        dev_info = get_gpu_device_info()
+        log_line("GPU Scalability Test — duration run (light logging + util cap)")
+        log_line(f"Started: {datetime.now(timezone.utc).strftime('%Y-%m-%dT%H%M%SZ')} UTC")
+        log_line(f"Target duration: {duration_seconds} s ({duration_seconds / 3600:.2f} hours)")
+        log_line(f"Output file: {output_path or '(none; terminal only)'}")
+        log_line(
+            f"Backend: {dev_info.get('backend')} | pid={dev_info.get('pid')} | "
+            f"python={dev_info.get('python')} numpy={dev_info.get('numpy')} cupy={dev_info.get('cupy') or 'n/a'}"
+        )
+        if dev_info.get("cuda_visible_devices") != "":
+            log_line(f"CUDA_VISIBLE_DEVICES={dev_info.get('cuda_visible_devices')}")
+        if dev_info.get("gpu_index") is not None:
+            log_line(
+                f"GPU device: index={dev_info.get('gpu_index')} name={dev_info.get('gpu_name') or 'unknown'} "
+                f"cc={dev_info.get('gpu_cc') or 'unknown'} mem_total_mb={dev_info.get('gpu_mem_total_mb') or 'unknown'}"
+            )
+        log_line(f"Util cap: {util_max_percent:.1f}%  (samples={util_samples}, interval={util_interval_sec}s)")
+        log_line(f"Log interval: {log_interval_sec:.1f}s")
+        log_line("=" * 60)
 
         end_time = time.perf_counter() + duration_seconds
         run_count = 0
@@ -608,11 +736,17 @@ def run_for_duration(
                 avg_err = (err_delta / max(1, zeros_delta)) * 100
                 avg_util = (sum_util / util_count) if util_count else float("nan")
                 remaining = end_time - now
-                print(
-                    f"{datetime.utcnow().strftime('%Y-%m-%dT%H%M%SZ')} "
+                proc_gpu_mem_mb = query_process_gpu_memory_mb(pid=dev_info.get("pid"))
+                gpu_stats = query_gpu_memory_and_util(gpu_index=dev_info.get("gpu_index"))
+                proc_mem_str = "n/a" if proc_gpu_mem_mb is None else f"{proc_gpu_mem_mb:.0f}"
+                gpu_mem_used_str = "n/a" if gpu_stats.get("mem_used_mb") is None else f"{gpu_stats.get('mem_used_mb'):.0f}/{gpu_stats.get('mem_total_mb'):.0f}"
+                log_line(
+                    f"{datetime.now(timezone.utc).strftime('%Y-%m-%dT%H%M%SZ')} "
+                    f"backend={'cupy' if _CUPY_AVAILABLE else 'numpy'} "
                     f"runs={run_count} (+{runs_delta}) zeros={total_zeros} (+{zeros_delta}) "
                     f"ms/zero={avg_ms:.3f} err_mean%={avg_err:.4f} err_max%={max_error*100:.4f} "
-                    f"gpu_util%~={avg_util:.1f} sleep_added={last_logged_sleep:.2f}s rem={remaining:.0f}s"
+                    f"gpu_util%~={avg_util:.1f} gpu_mem_mb={gpu_mem_used_str} proc_gpu_mem_mb={proc_mem_str} "
+                    f"sleep_added={last_logged_sleep:.2f}s rem={remaining:.0f}s"
                 )
                 # Reset interval baselines
                 last_log_t = now
@@ -625,25 +759,24 @@ def run_for_duration(
             if time.perf_counter() >= end_time:
                 break
 
-        print("\n" + "=" * 60)
-        print("DURATION RUN SUMMARY")
-        print("=" * 60)
-        print(f"Total runs: {run_count}")
-        print(f"Total zeros tested: {total_zeros}")
-        print(f"Target duration: {duration_seconds} s")
-        print(f"Finished: {datetime.utcnow().strftime('%Y-%m-%dT%H%M%SZ')} UTC")
+        log_line("\n" + "=" * 60)
+        log_line("DURATION RUN SUMMARY")
+        log_line("=" * 60)
+        log_line(f"Total runs: {run_count}")
+        log_line(f"Total zeros tested: {total_zeros}")
+        log_line(f"Target duration: {duration_seconds} s")
+        log_line(f"Finished: {datetime.now(timezone.utc).strftime('%Y-%m-%dT%H%M%SZ')} UTC")
         if total_zeros > 0:
             mean_ms = (sum_time_sec / total_zeros) * 1000
             mean_err = (sum_error / total_zeros) * 100
             avg_util = (sum_util / util_count) if util_count else float("nan")
-            print(f"\nAggregate timing (per zero): mean {mean_ms:.3f} ms")
-            print(f"Aggregate error (relative): mean {mean_err:.4f}%  max {max_error*100:.4f}%")
-            print(f"GPU util sampled avg: {avg_util:.1f}%  (samples={util_count})")
-        print("=" * 60)
-        print("GPU scalability duration run completed.")
+            log_line(f"\nAggregate timing (per zero): mean {mean_ms:.3f} ms")
+            log_line(f"Aggregate error (relative): mean {mean_err:.4f}%  max {max_error*100:.4f}%")
+            log_line(f"GPU util sampled avg: {avg_util:.1f}%  (samples={util_count})")
+        log_line("=" * 60)
+        log_line("GPU scalability duration run completed.")
     finally:
         if output_path and f is not None:
-            sys.stdout = old_stdout
             f.close()
     return {
         "runs": int(run_count),
