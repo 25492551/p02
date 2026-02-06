@@ -40,30 +40,22 @@ Our main contributions include: (1) a novel energy function providing physical i
 
 ```
 P02/
-├── 01_data/            # Math results (manuscripts, analysis reports)
+├── 01_data/            # Mathematical results and submission materials
 │   ├── 00_final_report.md
 │   ├── 01_*_report.md … 10_*_report.md
-│   └── manuscript_mathematics_of_computation.md
-├── 02_log/             # Log files
-│   ├── 01_chat/        # Chat logs
-│   └── 02_job/         # Job logs
-├── 03_script/          # Python scripts
+│   └── submission/     # Submission manuscript + figures (PNG)
+├── 02_log/             # Logs (job logs are mandatory)
+│   ├── 01_chat/        # Chat logs (user-managed)
+│   └── 02_job/         # Job logs + logmap
+├── 03_script/          # Python scripts (visualization, simulation, benchmarks)
 │   ├── 01_non_commutative_noise_simulation.py … 10_chaos_wave_prediction.py
-│   ├── 11_markdown_to_pdf.py
-│   ├── 12_pdf_to_markdown.py
 │   ├── 13_scalability_test.py
 │   ├── 14_benchmark_comparison.py
 │   ├── 15_generate_all_figures.py
-│   ├── 16_scalability_test_gpu.py
-│   └── latex_to_markdown.py
-├── 04_layout/          # Blueprint documents (optional)
+│   └── 16_scalability_test_gpu.py
+├── 04_layout/          # Blueprints (optional)
 ├── 05_plan/            # Planning documents
-├── 06_docs/            # Other docs (run logs, usage guides, install notes)
-│   ├── cuda12_install_commands.md
-│   ├── 11_16_scalability_test_gpu_usage.md
-│   ├── gpu_scalability_*.txt, gpu_scalability_low_utilization_analysis.md
-│   └── (other run logs and reference materials)
-└── README.md           # This file
+└── 06_docs/            # Run logs, usage guides, install notes, reference
 
 ```
 

@@ -14,4 +14,3 @@ mpmath>=1.2.0  # For benchmark comparisons
 
 # GPU (CUDA 12) - for 16_scalability_test_gpu.py
 cupy-cuda12x>=13.0.0
-

@@ -22,8 +22,8 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Large generated logs/results (avoid GitHub 100MB limit)
-06_docs/gpu_scalability_*results*.txt
+# Project specific
+*.wav
 
 # Logs (optional - uncomment if you don't want to track logs)
 # log/

@@ -239,7 +239,6 @@ This file tracks all job logs for the P02 project.
   - Documented header diagnostics (backend, PID, versions, CUDA_VISIBLE_DEVICES, GPU device info)
   - Documented new periodic GPU usage fields and added an example log line
   - Expanded troubleshooting guidance (pacing and sampling limitations; disable with `--util-max 0`)
-
 ## Job Log Writing Rules
 
 1. Before starting a job: Check previous job logs
