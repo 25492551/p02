@@ -615,6 +615,10 @@ def test_scalability_gpu(
     }
 
 
+# Minimum batch size when util cap is enforced by reducing batch_size (avoid too-small batches).
+MIN_BATCH_FOR_UTIL_CAP = 64
+
+
 def run_for_duration(
     duration_seconds,
     output_path,
@@ -635,7 +639,10 @@ def run_for_duration(
     """
     Run scalability tests until duration_seconds has elapsed.
     Logging is lightweight: periodic one-line summaries (log_interval_sec) + final summary.
-    Utilization cap: if sampled GPU util > util_max_percent, sleep briefly to reduce duty cycle.
+    Utilization cap: if util_max_percent > 0, cap is enforced by adjusting batch_size (not sleep).
+    When sampled GPU util > util_max_percent, batch_size is reduced for the next run.
+    When util is below target (resource remains), batch_size is enlarged back up to the requested
+    batch_size so the run can use more of the available GPU.
     """
     terminal_out = sys.stdout
     f = None
@@ -668,7 +675,7 @@ def run_for_duration(
                 f"GPU device: index={dev_info.get('gpu_index')} name={dev_info.get('gpu_name') or 'unknown'} "
                 f"cc={dev_info.get('gpu_cc') or 'unknown'} mem_total_mb={dev_info.get('gpu_mem_total_mb') or 'unknown'}"
             )
-        log_line(f"Util cap: {util_max_percent:.1f}%  (samples={util_samples}, interval={util_interval_sec}s)")
+        log_line(f"Util cap: {util_max_percent:.1f}%  (by batch-size, samples={util_samples}, interval={util_interval_sec}s)")
         log_line(f"Log interval: {log_interval_sec:.1f}s")
         log_line("=" * 60)
 
@@ -685,7 +692,11 @@ def run_for_duration(
         last_logged_zeros = 0
         last_logged_time = 0.0
         last_logged_error = 0.0
-        last_logged_sleep = 0.0
+        last_logged_batch = batch_size
+
+        # Current batch size for util cap: adjusted each run when util_max_percent > 0.
+        current_batch = max(MIN_BATCH_FOR_UTIL_CAP, int(batch_size))
+        max_batch = max(MIN_BATCH_FOR_UTIL_CAP, int(batch_size))
 
         while time.perf_counter() < end_time:
             run_count += 1
@@ -694,7 +705,7 @@ def run_for_duration(
                 start_n=start_n,
                 end_n=end_n,
                 step=step,
-                batch_size=batch_size,
+                batch_size=current_batch,
                 use_gpu=True,
                 use_dynamic_memory=use_dynamic_memory,
                 reserve_ratio=reserve_ratio,
@@ -711,20 +722,17 @@ def run_for_duration(
             max_error = max(max_error, float(summary["max_error"]))
 
             util = sample_gpu_utilization_percent(samples=util_samples, interval_sec=util_interval_sec)
-            # Duty-cycle pacing: even without reliable SMI util sampling, keep compute duty cycle <= util_max_percent.
-            sleep_s = 0.0
-            if util_max_percent and util_max_percent > 0:
-                sleep_s = max(0.0, (100.0 / float(util_max_percent)) - 1.0) * max(0.0, run_elapsed)
             if util is not None:
                 sum_util += util
                 util_count += 1
-                if util_max_percent and util > util_max_percent:
-                    # Duty-cycle throttle: sleep proportional to overflow
-                    ratio = (util / util_max_percent) - 1.0
-                    sleep_s = min(float(max_sleep_sec), sleep_s + max(0.0, ratio * max(0.05, run_elapsed)))
-            if sleep_s > 0:
-                time.sleep(min(float(max_sleep_sec), sleep_s))
-            last_logged_sleep += sleep_s
+            # Cap by batch-size: adjust current_batch from sampled util (no sleep).
+            # When util > target: reduce batch to lower load; when util < target: enlarge batch to use remaining resource.
+            if util_max_percent and util_max_percent > 0 and util is not None:
+                if util > util_max_percent:
+                    current_batch = max(MIN_BATCH_FOR_UTIL_CAP, int(current_batch * 0.9))
+                else:
+                    # Enlarge batch when resource (GPU util) remains below target, up to requested max_batch.
+                    current_batch = min(max_batch, max(current_batch + 1, int(current_batch * 1.05)))
 
             now = time.perf_counter()
             if (now - last_log_t) >= float(log_interval_sec):
@@ -746,7 +754,7 @@ def run_for_duration(
                     f"runs={run_count} (+{runs_delta}) zeros={total_zeros} (+{zeros_delta}) "
                     f"ms/zero={avg_ms:.3f} err_mean%={avg_err:.4f} err_max%={max_error*100:.4f} "
                     f"gpu_util%~={avg_util:.1f} gpu_mem_mb={gpu_mem_used_str} proc_gpu_mem_mb={proc_mem_str} "
-                    f"sleep_added={last_logged_sleep:.2f}s rem={remaining:.0f}s"
+                    f"batch={current_batch} rem={remaining:.0f}s"
                 )
                 # Reset interval baselines
                 last_log_t = now
@@ -754,7 +762,7 @@ def run_for_duration(
                 last_logged_zeros = total_zeros
                 last_logged_time = sum_time_sec
                 last_logged_error = sum_error
-                last_logged_sleep = 0.0
+                last_logged_batch = current_batch
 
             if time.perf_counter() >= end_time:
                 break
@@ -803,12 +811,12 @@ if __name__ == "__main__":
         "--util-max",
         type=float,
         default=87.0,
-        help="Max utilization target for duration pacing (default 87). Implemented as duty-cycle cap (sleep between runs).",
+        help="Max utilization target in duration mode (default 87). Cap is enforced by adjusting batch_size: reduce when util > target, increase when below. Use 0 to disable.",
     )
     parser.add_argument("--util-samples", type=int, default=3, help="Samples for util averaging (default 3).")
     parser.add_argument("--util-interval-sec", type=float, default=0.1, help="Seconds between util samples (default 0.1).")
     parser.add_argument("--log-interval-sec", type=float, default=10.0, help="Seconds between log lines in duration run (default 10).")
-    parser.add_argument("--max-sleep-sec", type=float, default=2.0, help="Max sleep per run for util pacing (default 2).")
+    parser.add_argument("--max-sleep-sec", type=float, default=2.0, help="(Unused when cap is by batch-size; kept for compatibility.)")
     args = parser.parse_args()
 
     if not _CUPY_AVAILABLE:

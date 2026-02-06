@@ -263,3 +263,14 @@ This file tracks all job logs for the P02 project.
 - 2026-02-05: 20260205T143500_init_venv_requirements.md added
 - 2026-02-05: 20260205T074743_update_duration_terminal_reporting_gpu_usage_check.md added
 - 2026-02-05: 20260205T075514_update_usage_guide_with_terminal_gpu_usage_fields.md added
+- 2026-02-06: 20260206T120000_manuscript_large_batch_figures.md added
+
+### 20260206T120000_manuscript_large_batch_figures.md
+- **Job Date/Time**: 2026-02-06T120000
+- **Job Overview**: Manuscript updated with large batch GPU results (570M zeros); all 10 submission figures recreated in `06_docs`.
+- **Changed Files**:
+  - Modified: `01_data/submission/manuscript_mathematics_of_computation.md`, `03_script/15_generate_all_figures.py`
+  - New (regenerated): `06_docs/figure1_non_commutative_noise.png` … `06_docs/figure10_benchmark_comparison.png`
+- **Key Details**:
+  - Large batch validation from `gpu_scalability_3h_lightlog_util87_20260205T171511.txt` (570,643,095 zeros, 0.001 ms/zero, err_mean 0.0312%) added to manuscript Abstract, Algorithm Performance, and Scalability Validation sections.
+  - All submission figures regenerated via `15_generate_all_figures.py`; images now in `06_docs/` for manuscript.

@@ -40,31 +40,30 @@ Our main contributions include: (1) a novel energy function providing physical i
 
 ```
 P02/
-├── 01_data/          # Data files and manuscripts
-│   ├── manuscript_mathematics_of_computation.md
-│   ├── manuscript_current_applied_physics.md
-│   └── Mathematics of Computation - Guide for authors.md
-├── 02_log/            # Log files
-│   ├── 01_chat/       # Chat logs
-│   └── 02_job/        # Job logs
-├── 03_script/         # Python scripts
-│   ├── 01_non_commutative_noise_simulation.py
-│   ├── 02_energy_landscape_visualization.py
-│   ├── 03_particle_simulation.py
-│   ├── 04_vector_field_visualization.py
-│   ├── 05_coulomb_gas_simulation.py
-│   ├── 07_zero_prediction.py
-│   ├── 08_zeta_bell_sound_synthesis.py
-│   ├── 09_spectral_rigidity_prediction.py
-│   ├── 10_chaos_wave_prediction.py
-│   ├── 11_markdown_to_pdf.py          # Markdown to PDF converter
-│   ├── 12_pdf_to_markdown.py          # PDF to Markdown converter (with OCR)
-│   ├── 13_scalability_test.py         # Scalability testing (zeros 1,000-10,000)
-│   ├── 14_benchmark_comparison.py     # Runtime benchmarks vs mpmath/Arb
-│   └── latex_to_markdown.py            # LaTeX to Markdown converter
-├── 05_plan/           # Planning documents
-├── 06_docs/           # Analysis reports and documentation
-└── README.md          # This file
+├── 01_data/            # Math results (manuscripts, analysis reports)
+│   ├── 00_final_report.md
+│   ├── 01_*_report.md … 10_*_report.md
+│   └── manuscript_mathematics_of_computation.md
+├── 02_log/             # Log files
+│   ├── 01_chat/        # Chat logs
+│   └── 02_job/         # Job logs
+├── 03_script/          # Python scripts
+│   ├── 01_non_commutative_noise_simulation.py … 10_chaos_wave_prediction.py
+│   ├── 11_markdown_to_pdf.py
+│   ├── 12_pdf_to_markdown.py
+│   ├── 13_scalability_test.py
+│   ├── 14_benchmark_comparison.py
+│   ├── 15_generate_all_figures.py
+│   ├── 16_scalability_test_gpu.py
+│   └── latex_to_markdown.py
+├── 04_layout/          # Blueprint documents (optional)
+├── 05_plan/            # Planning documents
+├── 06_docs/            # Other docs (run logs, usage guides, install notes)
+│   ├── cuda12_install_commands.md
+│   ├── 11_16_scalability_test_gpu_usage.md
+│   ├── gpu_scalability_*.txt, gpu_scalability_low_utilization_analysis.md
+│   └── (other run logs and reference materials)
+└── README.md           # This file
 
 ```
 

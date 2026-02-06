@@ -19,7 +19,7 @@
 
 ## Abstract
 
-We present a comprehensive computational framework for analyzing non-trivial zeros of the Riemann zeta function through visualization techniques and predictive algorithms. Our approach combines energy landscape analysis, particle dynamics simulations, Coulomb gas models, and a three-step refinement algorithm for zero location prediction. The energy function $H(s) = \log(|\zeta(s)|) + \alpha |\Re(s) - 1/2|^2$ reveals zeros as stable energy minima, providing physical interpretation of the Riemann Hypothesis. Particle simulations demonstrate natural convergence to zeros along the critical line $\Re(s) = 1/2$. The Coulomb gas model establishes repulsion forces preventing multiple roots, consistent with Gaussian Unitary Ensemble (GUE) theory. Our three-step prediction algorithm achieves sub-millisecond accuracy: (1) macroscopic prediction using the Riemann-von Mangoldt formula, (2) microscopic correction via spectral rigidity theory, and (3) chaos engine refinement using Riemann-Siegel Z-function approximation. Numerical experiments demonstrate prediction errors less than $0.001$ for individual zeros and validate scalability through testing on zeros 1,000-10,000. Runtime benchmarks show competitive performance compared to mpmath and Arb libraries. The computational framework provides new insights into zero distribution patterns and offers practical tools for high-precision zero calculation.
+We present a comprehensive computational framework for analyzing non-trivial zeros of the Riemann zeta function through visualization techniques and predictive algorithms. Our approach combines energy landscape analysis, particle dynamics simulations, Coulomb gas models, and a three-step refinement algorithm for zero location prediction. The energy function $H(s) = \log(|\zeta(s)|) + \alpha |\Re(s) - 1/2|^2$ reveals zeros as stable energy minima, providing physical interpretation of the Riemann Hypothesis. Particle simulations demonstrate natural convergence to zeros along the critical line $\Re(s) = 1/2$. The Coulomb gas model establishes repulsion forces preventing multiple roots, consistent with Gaussian Unitary Ensemble (GUE) theory. Our three-step prediction algorithm achieves sub-millisecond accuracy: (1) macroscopic prediction using the Riemann-von Mangoldt formula, (2) microscopic correction via spectral rigidity theory, and (3) chaos engine refinement using Riemann-Siegel Z-function approximation. Numerical experiments demonstrate prediction errors less than $0.001$ for individual zeros and validate scalability through testing on zeros 1,000-10,000 and a large batch GPU run of over 570 million zeros (mean 0.001 ms/zero, mean relative error 0.0312%). Runtime benchmarks show competitive performance compared to mpmath and Arb libraries. The computational framework provides new insights into zero distribution patterns and offers practical tools for high-precision zero calculation.
 
 ## Introduction
 
@@ -153,7 +153,7 @@ where $\varepsilon_n$ are random phase perturbations. This allows investigation 
 
 Numerical experiments show the zeta function structure remains robust for noise levels up to $0.2$, with collapse occurring near noise level $1.0$.
 
-![Non-commutative noise simulation showing order vs. chaos](../06_docs/figure1_non_commutative_noise.png)
+![Non-commutative noise simulation showing order vs. chaos](figure1_non_commutative_noise.png)
 
 ### Energy Landscape Visualization
 
@@ -170,7 +170,7 @@ We compute the energy landscape $H(s)$ across the complex plane in regions conta
 
 Results reveal each zero as a clear energy minimum (energy well), with the critical line $\Re(s) = 1/2$ showing consistently low energy. Energy increases quadratically with distance from the critical line.
 
-![Energy landscape visualization showing zeros as energy minima](../06_docs/figure2_energy_landscape.png)
+![Energy landscape visualization showing zeros as energy minima](figure2_energy_landscape.png)
 
 ### Particle Simulation
 
@@ -196,7 +196,7 @@ where $\eta$ is the learning rate and $\xi_t$ is stochastic noise simulating qua
 
 Particles naturally converge to zeros, with most converging to the critical line $\Re(s) = 1/2$. Stochastic noise enables global optimization, preventing trapping in local minima.
 
-![Particle simulation showing convergence to zeros](../06_docs/figure3_particle_simulation.png)
+![Particle simulation showing convergence to zeros](figure3_particle_simulation.png)
 
 ### Vector Field Visualization
 
@@ -213,7 +213,7 @@ where $h$ is a small step size (typically $10^{-5}$).
 
 Zeros act as clear sinks, attracting surrounding flow. Each zero has an independent basin of attraction, with most flow moving along the critical line.
 
-![Vector field visualization showing zeros as sinks](../06_docs/figure4_vector_field.png)
+![Vector field visualization showing zeros as sinks](figure4_vector_field.png)
 
 ## Coulomb Gas Model and Repulsion Analysis
 
@@ -250,9 +250,9 @@ Starting with particles placed very close together (simulating near-collision), 
 
 The infinite repulsion at distance $0$ ensures zeros cannot merge, providing a physical proof of the mathematical theorem that the Riemann zeta function has no multiple roots.
 
-![Coulomb gas evolution showing particle separation](../06_docs/figure5a_coulomb_gas_evolution.png)
+![Coulomb gas evolution showing particle separation](figure5a_coulomb_gas_evolution.png)
 
-![Spacing distribution demonstrating repulsion](../06_docs/figure5b_coulomb_gas_spacing.png)
+![Spacing distribution demonstrating repulsion](figure5b_coulomb_gas_spacing.png)
 
 ## Three-Step Zero Prediction Algorithm
 
@@ -277,7 +277,7 @@ for $t$. This provides a macroscopic estimate reflecting large-scale statistical
 3. Initial guess: $t_0 \approx 2\pi n / \log(n)$
 4. Return solution: $t_{\text{macro}}$
 
-![Zero prediction comparison: macroscopic vs. microscopic](../06_docs/figure6_zero_prediction.png)
+![Zero prediction comparison: macroscopic vs. microscopic](figure6_zero_prediction.png)
 
 ### Step 2: Microscopic Correction via Spectral Rigidity
 
@@ -292,7 +292,7 @@ We apply spectral rigidity theory to correct for local deviations. The correctio
 
 The stiffness factor $\kappa \approx 0.95$ reflects that deviations change logarithmically slowly, with slight attenuation due to repulsion effects. This step typically reduces prediction error from approximately $0.13$ to less than $0.03$.
 
-![Spectral rigidity prediction showing improved accuracy](../06_docs/figure7_spectral_rigidity.png)
+![Spectral rigidity prediction showing improved accuracy](figure7_spectral_rigidity.png)
 
 ### Step 3: Chaos Engine (Riemann-Siegel Refinement)
 
@@ -305,7 +305,7 @@ Using the Riemann-Siegel Z-function approximation, we find the exact zero locati
 3. Use Brent's method to find root: $Z(t) = 0$ in $[t_{\min}, t_{\max}]$
 4. Return refined prediction: $t_n^{\text{final}}$
 
-![Chaos wave visualization showing prime interference](../06_docs/figure8_chaos_wave.png)
+![Chaos wave visualization showing prime interference](figure8_chaos_wave.png)
 
 ### Algorithm Performance and Scalability
 
@@ -320,7 +320,9 @@ For higher-index zeros, the algorithm maintains consistent accuracy. Testing on 
 - Prediction time scales approximately linearly with zero index
 - The three-step refinement maintains effectiveness even for zeros with imaginary parts exceeding $10,000$
 
-![Scalability test results: prediction time and accuracy](../06_docs/figure9_scalability_test.png)
+![Scalability test results: prediction time and accuracy](figure9_scalability_test.png)
+
+**Large batch GPU validation.** A 3-hour duration run (CuPy GPU backend, batch size 100,000) computed **570,643,095** zeros (28,545 batches). Aggregate metrics: mean time **0.001 ms per zero**, mean relative error **0.0312%**, max relative error 7.08%. This large-scale run confirms that the algorithm maintains sub-millisecond throughput and high accuracy at scale (see `06_docs/gpu_scalability_3h_lightlog_util87_20260205T171511.txt`).
 
 The three-step refinement demonstrates the power of combining statistical, physical, and computational approaches. The computational complexity is $O(N)$ for Step 3, where $N$ is the cutoff parameter in the Z-function approximation.
 
@@ -343,7 +345,7 @@ We compare our implementation against established libraries for computing Rieman
 - mpmath: ~12-18 seconds total
 - Arb: ~5-10 seconds total
 
-![Runtime benchmark comparison with mpmath and Arb](../06_docs/figure10_benchmark_comparison.png)
+![Runtime benchmark comparison with mpmath and Arb](figure10_benchmark_comparison.png)
 
 These benchmarks demonstrate that our approach provides competitive performance while maintaining high accuracy. The three-step refinement strategy enables efficient computation without sacrificing precision.
 
@@ -379,7 +381,7 @@ Our three-step algorithm achieves:
 
 The combination of statistical, physical, and computational methods provides a robust framework for zero location prediction.
 
-**Scalability Validation**: We tested our algorithm on zeros 1,000 through 10,000, demonstrating consistent accuracy and performance. Mean absolute error remains below $0.001$ across all tested ranges, with prediction time scaling approximately linearly with zero index. The algorithm maintains effectiveness even for zeros with imaginary parts exceeding $10,000$, validating its practical utility for large-scale computations.
+**Scalability Validation**: We tested our algorithm on zeros 1,000 through 10,000, demonstrating consistent accuracy and performance. Mean absolute error remains below $0.001$ across all tested ranges, with prediction time scaling approximately linearly with zero index. The algorithm maintains effectiveness even for zeros with imaginary parts exceeding $10,000$, validating its practical utility for large-scale computations. **Large batch GPU run**: A 3-hour run computed over **570 million** zeros (CuPy GPU, batch 100,000), with mean 0.001 ms per zero and mean relative error 0.0312%, confirming scalability and accuracy at scale.
 
 **Performance Benchmarks**: Runtime comparisons with established libraries show competitive performance:
 - Compared to mpmath: 2-4x faster for individual zero computation

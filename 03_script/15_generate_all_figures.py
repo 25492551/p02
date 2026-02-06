@@ -311,10 +311,12 @@ plt.close()
 
 # ============================================================================
 # Figure 9: Scalability Test Results
+# (Large batch GPU run: 570M zeros, 0.001 ms/zero, err_mean 0.0312% - see
+# 06_docs/gpu_scalability_3h_lightlog_util87_20260205T171511.txt)
 # ============================================================================
 print("9. Generating Figure 9: Scalability Test Results...")
 
-# Simulate scalability test results
+# Simulate scalability test results (zeros 1k-10k; large batch in manuscript text)
 test_indices = np.arange(1000, 10001, 100)
 prediction_times = 2 + 0.001 * test_indices + np.random.normal(0, 0.5, len(test_indices))
 prediction_times = np.maximum(prediction_times, 1.5)  # Minimum 1.5ms

@@ -8,10 +8,10 @@
 ## Directory Structure (Priority Order)
 The project follows a structured directory organization with the following priority:
 
-1. **@01_data**: Data files - only added by user
-   - Contains data files, database structures, and user-provided data
+1. **@01_data**: Math results
+   - Contains mathematical results: manuscripts, analysis reports, final reports, and related data
    - Files in this directory should not be modified by automated processes
-   - Riemann Zeta function zero data and related mathematical data should be stored here
+   - Riemann Zeta function zero data and related mathematical outputs belong here
 
 2. **@02_log**: Job logging (Mandatory)
    - All jobs and tasks must be documented as markdown files in this directory
@@ -44,23 +44,11 @@ The project follows a structured directory organization with the following prior
    - Plans are under consideration (not yet finalized)
    - Plans, checklists, and future steps should be documented in `plan_*.md` files in this directory
 
-6. **@06_docs**: Other docs with markdown format
-   - All project documentation in markdown format
-   - General documentation and reference materials
-   - **Mandatory**: All analysis results and reports must be written in this directory
-   - **Active**: Cursor must actively create and update reports when performing data analysis or visualization
-   - Report files should be well-structured markdown documents containing:
-     - Analysis objectives and methodology
-     - Data sources and processing steps
-     - Analysis results with tables, statistics, and visualizations (if applicable)
-     - Conclusions and observations
-     - Date and time of report generation
-   - Report naming convention: Use descriptive names like `[analysis_topic]_analysis.md` or `[visualization_topic]_report.md`
-   - When performing data analysis tasks or visualization work, you **must** create a report in this folder documenting the analysis results
-   - Reporting is mandatory, not optional
-   - Generated visualizations (plots, graphs, images) should be saved in appropriate locations (e.g., `06_docs/` directory)
-   - Sound files generated from zero frequencies should be saved with descriptive names
-   - All output files should be referenced in reports when relevant
+6. **@06_docs**: Other docs
+   - Run logs (e.g. GPU scalability logs), install notes, usage guides, and reference materials
+   - **Mandatory**: Math results (reports, manuscripts) go in `01_data/`; other documentation (logs, how-to, reference) goes in `06_docs/`
+   - Report naming: Use descriptive names like `[topic]_analysis.md` or `[topic]_report.md`
+   - Generated visualizations and sound files should be saved in an appropriate location and referenced in reports
 
 ## Language Requirements (Mandatory)
 - **All English**: All content in this project must be written in English
@@ -125,7 +113,7 @@ The project follows a structured directory organization with the following prior
 - Scripts related to database operations should follow PostgreSQL best practices
 
 ## Documentation
-- All project documentation should be placed in the `06_docs/` directory
+- Math results (reports, manuscripts) in `01_data/`; other docs (run logs, usage guides, reference) in `06_docs/`
 - Documentation files should be in markdown format (.md) unless otherwise specified
 
 ## General Guidelines
@@ -176,5 +164,5 @@ The project follows a structured directory organization with the following prior
 3. **Must** record job content in `02_log/02_job/` after completing a job (mandatory)
 4. Chat logs are only checked when requested by the user
 5. Use scripts from the `03_script/` folder for calculations, visualizations, and simulations
-6. **Must** create analysis reports in the `06_docs/` folder after completing data analysis or visualization work (mandatory)
+6. **Must** put math results (analysis reports, manuscripts) in `01_data/`; put other docs (logs, how-to) in `06_docs/` (mandatory)
 7. Save generated visualizations and output files appropriately and document them in reports
