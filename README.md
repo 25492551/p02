@@ -12,7 +12,7 @@ Based on the prime distribution analysis and Riemann hypothesis research covered
 
 ## Abstract
 
-We present a comprehensive computational framework for analyzing non-trivial zeros of the Riemann zeta function through visualization techniques and predictive algorithms. Our approach combines energy landscape analysis, particle dynamics simulations, Coulomb gas models, and a three-step refinement algorithm for zero location prediction. The energy function $H(s) = \log(|\zeta(s)|) + \alpha |\Re(s) - 1/2|^2$ reveals zeros as stable energy minima, providing physical interpretation of the Riemann Hypothesis. Particle simulations demonstrate natural convergence to zeros along the critical line $\Re(s) = 1/2$. The Coulomb gas model establishes repulsion forces preventing multiple roots, consistent with Gaussian Unitary Ensemble (GUE) theory. Our three-step prediction algorithm achieves sub-millisecond accuracy: (1) macroscopic prediction using the Riemann-von Mangoldt formula, (2) microscopic correction via spectral rigidity theory, and (3) chaos engine refinement using Riemann-Siegel Z-function approximation. Numerical experiments demonstrate prediction errors less than $0.001$ for individual zeros and validate scalability through testing on zeros 1,000-10,000. Runtime benchmarks show competitive performance compared to mpmath and Arb libraries. The computational framework provides new insights into zero distribution patterns and offers practical tools for high-precision zero calculation.
+We present a comprehensive computational framework for analyzing non-trivial zeros of the Riemann zeta function through visualization techniques and predictive algorithms. Our approach combines energy landscape analysis, particle dynamics simulations, Coulomb gas models, and a three-step refinement algorithm for zero location prediction. The energy function $H(s) = \log(|\zeta(s)|) + \alpha |\Re(s) - 1/2|^2$ reveals zeros as stable energy minima, providing physical interpretation of the Riemann Hypothesis. Particle simulations demonstrate natural convergence to zeros along the critical line $\Re(s) = 1/2$. The Coulomb gas model establishes repulsion forces preventing multiple roots, consistent with Gaussian Unitary Ensemble (GUE) theory. Our three-step prediction algorithm achieves sub-millisecond accuracy: (1) macroscopic prediction using the Riemann-von Mangoldt formula, (2) microscopic correction via spectral rigidity theory, and (3) chaos engine refinement using Riemann-Siegel Z-function approximation. Numerical experiments demonstrate prediction errors less than $0.001$ for individual zeros and validate scalability through testing on zeros 1,000-10,000 and a large batch GPU run of over 570 million zeros (mean 0.001 ms/zero, mean relative error 0.0312%). Runtime benchmarks show competitive performance compared to mpmath and Arb libraries. The computational framework provides new insights into zero distribution patterns and offers practical tools for high-precision zero calculation.
 
 ## Introduction
 
@@ -43,6 +43,8 @@ P02/
 ├── 01_data/            # Mathematical results and submission materials
 │   ├── 00_final_report.md
 │   ├── 01_*_report.md … 10_*_report.md
+│   ├── manuscript_mathematics_of_computation.md
+│   ├── Mathematics of Computation - Guide for authors.md
 │   └── submission/     # Submission manuscript + figures (PNG)
 ├── 02_log/             # Logs (job logs are mandatory)
 │   ├── 01_chat/        # Chat logs (user-managed)
@@ -58,6 +60,15 @@ P02/
 └── 06_docs/            # Run logs, usage guides, install notes, reference
 
 ```
+
+## Submission Materials
+
+- **Manuscript (submission package)**: `01_data/submission/manuscript_mathematics_of_computation.md`
+- **Figures (PNG, referenced by manuscript)**: `01_data/submission/figure1_non_commutative_noise.png` … `figure10_benchmark_comparison.png`
+
+Notes:
+- The submission manuscript uses **same-folder** image links (e.g., `figure1_non_commutative_noise.png`).
+- Large batch GPU scalability logs are stored under `06_docs/`, e.g. `06_docs/gpu_scalability_3h_lightlog_util87_20260205T171511.txt`.
 
 ## Main Script Descriptions
 
